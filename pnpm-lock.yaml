@@ -78,6 +78,9 @@ importers:
       axios:
         specifier: ^1.11.0
         version: 1.11.0
+      common:
+        specifier: workspace:*
+        version: link:../../packages/common
       lucide-react:
         specifier: ^0.263.1
         version: 0.263.1(react@19.1.0)

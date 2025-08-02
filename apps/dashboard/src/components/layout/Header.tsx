@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 function Header({ onNavigateToLogin, onNavigateToSignup }: HeaderProps) {
-  const { token } = useAppSelector((state) => state.auth);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -66,7 +66,7 @@ function Header({ onNavigateToLogin, onNavigateToSignup }: HeaderProps) {
           </nav>
 
           {/* Auth Buttons */}
-          {!token ? (
+          {!isAuthenticated ? (
             <div className="hidden md:flex items-center space-x-4">
               <button
                 onClick={onNavigateToLogin}

@@ -1,9 +1,5 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
-
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { getStoredToken, isValidToken } from "common/common";
 interface User {
   id?: string;
   email: string;
@@ -17,10 +13,13 @@ interface AuthState {
   error: string | null;
 }
 
+const storedToken = getStoredToken();
+const isTokenValid = isValidToken(storedToken);
+
 const initialState: AuthState = {
   user: null,
   token: typeof window !== "undefined" ? localStorage.getItem("token") : null,
-  isAuthenticated: false,
+  isAuthenticated: isTokenValid,
   loading: false,
   error: null,
 };

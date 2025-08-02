@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "exports":{
-    "./zod":"./src/types.ts"
+    "./zod":"./src/types.ts",
+    "./common":"./src/common.ts"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
