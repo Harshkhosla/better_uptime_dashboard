@@ -4,16 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+       "lint": "eslint . --ext .js,.ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "common": "workspace:*",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
-    "prisma":"workspace:*"
+    "prisma": "workspace:*"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^22.15.3",
     "nodemon": "^3.1.10",
