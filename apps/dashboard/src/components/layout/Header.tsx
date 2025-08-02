@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { logout } from "../../redux/slice/authSlice";
 
 interface HeaderProps {
   onNavigateToLogin: () => void;
@@ -7,6 +9,8 @@ interface HeaderProps {
 }
 
 function Header({ onNavigateToLogin, onNavigateToSignup }: HeaderProps) {
+  const { token } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -62,20 +66,29 @@ function Header({ onNavigateToLogin, onNavigateToSignup }: HeaderProps) {
           </nav>
 
           {/* Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          {!token ? (
+            <div className="hidden md:flex items-center space-x-4">
+              <button
+                onClick={onNavigateToLogin}
+                className="text-dark-300 hover:text-white transition-colors"
+              >
+                Sign in
+              </button>
+              <button
+                onClick={onNavigateToSignup}
+                className="bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
+              >
+                Sign up
+              </button>
+            </div>
+          ) : (
             <button
-              onClick={onNavigateToLogin}
-              className="text-dark-300 hover:text-white transition-colors"
-            >
-              Sign in
-            </button>
-            <button
-              onClick={onNavigateToSignup}
+              onClick={() => dispatch(logout())}
               className="bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
             >
-              Sign up
+              Log Out
             </button>
-          </div>
+          )}
 
           {/* Mobile menu button */}
           <button
