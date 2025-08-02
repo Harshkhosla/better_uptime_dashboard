@@ -4,6 +4,7 @@ import { useLoginMutation } from "../../redux/api/authApi";
 import { useAppDispatch } from "../../redux/hooks";
 import { setCredentials } from "../../redux/slice/authSlice";
 import { Input } from "@repo/ui/Input";
+import { Button } from "@repo/ui/button";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -136,12 +137,12 @@ function Login() {
                 className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-white placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 required
               />
-              <button
+              <Button
                 type="submit"
                 className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 mt-4"
               >
                 Sign in
-              </button>
+              </Button>
             </div>
           )}
 
