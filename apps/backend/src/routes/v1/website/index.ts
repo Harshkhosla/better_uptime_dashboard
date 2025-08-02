@@ -50,9 +50,9 @@ router.get("/status/:websiteId", authMiddleware, async (req, res) => {
   }
 
   res.status(200).json({
-    id:website?.id,
-    url:website?.url
-  })
+    id: website?.id,
+    url: website?.url,
+  });
   return;
 });
 export const WebsiteRouter = router;

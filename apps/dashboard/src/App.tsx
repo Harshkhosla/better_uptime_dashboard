@@ -8,6 +8,7 @@ import Layout from "./components/layout/Layout";
 import HomePage from "./components/home/HomePage";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
+import { Dashboard } from "./components/dashboard/Dashboard";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         />
         {/* Login route - /login */}
         <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         {/* Signup route - /signup */}
         <Route path="/signup" element={<Signup />} />
         {/* Redirect any unknown routes to home */}

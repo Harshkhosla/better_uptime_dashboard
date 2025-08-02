@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../redux/api/authApi";
 import { useAppDispatch } from "../../redux/hooks";
 import { setCredentials } from "../../redux/slice/authSlice";
+import { Input } from "@repo/ui/Input";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -85,14 +86,14 @@ function Login() {
             >
               E-mail
             </label>
-            <input
+            <Input
               id="email"
               type="email"
               placeholder="Your work e-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-white placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              required
+              required={true}
             />
           </div>
 
@@ -126,7 +127,7 @@ function Login() {
               >
                 Password
               </label>
-              <input
+              <Input
                 id="password"
                 type="password"
                 placeholder="Enter your password"

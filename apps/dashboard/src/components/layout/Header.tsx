@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { logout } from "../../redux/slice/authSlice";
+import { Link } from "react-router-dom";
 
 interface HeaderProps {
   onNavigateToLogin: () => void;
@@ -27,18 +28,19 @@ function Header({ onNavigateToLogin, onNavigateToSignup }: HeaderProps) {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
+            <Link
+              to="/dashboard"
+              className="text-dark-300 hover:text-white transition-colors"
+            >
+              Dashboard
+            </Link>
             <div className="flex items-center space-x-1 cursor-pointer group">
               <span className="text-dark-300 group-hover:text-white transition-colors">
-                Platform
+                Home
               </span>
               <ChevronDown className="w-4 h-4 text-dark-300 group-hover:text-white transition-colors" />
             </div>
-            <a
-              href="#"
-              className="text-dark-300 hover:text-white transition-colors"
-            >
-              Documentation
-            </a>
+
             <a
               href="#"
               className="text-dark-300 hover:text-white transition-colors"

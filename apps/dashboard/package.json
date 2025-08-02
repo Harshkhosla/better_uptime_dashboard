@@ -18,7 +18,8 @@
     "react-dom": "^19.1.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.20.1",
-    "common": "workspace:*"
+    "common": "workspace:*",
+    "@repo/ui": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
