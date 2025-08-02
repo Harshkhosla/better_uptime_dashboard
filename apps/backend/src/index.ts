@@ -8,7 +8,7 @@ const PORT = 4000;
 app.use(cors());
 app.use(express.json());
 
-app.use("api/v1", v1Router);
+app.use("/api/v1", v1Router);
 
 app.listen(PORT, () => {
   console.log("HTTP Backend Working", PORT);

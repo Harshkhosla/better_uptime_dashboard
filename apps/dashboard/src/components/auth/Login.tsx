@@ -1,15 +1,28 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { useLoginMutation } from "../../redux/api/authApi";
+import { useAppDispatch } from "../../redux/hooks";
+import { setCredentials } from "../../redux/slice/authSlice";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isMagicLink, setIsMagicLink] = useState(true);
   const navigate = useNavigate();
+  const [login] = useLoginMutation();
+  const dispatch = useAppDispatch();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const result = await login({ email, password }).unwrap();
+    console.log(result, "dsvjhbsdvbvd");
+    dispatch(
+      setCredentials({
+        user: { email: email },
+        token: result?.token || "",
+      }),
+    );
+    navigate("/");
     console.log("Login submitted:", { email, password, isMagicLink });
   };
 

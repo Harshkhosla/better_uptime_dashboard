@@ -1,15 +1,28 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSignupMutation } from "../../redux/api/authApi";
+import { useAppDispatch } from "../../redux/hooks";
+import { setCredentials } from "../../redux/slice/authSlice";
 
 function Signup() {
   const [email, setEmail] = useState("harshkhosla9945@gmail.com");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [signup] = useSignupMutation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Signup submitted:", { email, password, confirmPassword });
+    const result = await signup({ email, password }).unwrap();
+    dispatch(
+      setCredentials({
+        user: { email: email },
+        token: result?.token || "",
+      }),
+    );
+    console.log(result);
+    navigate("/");
   };
 
   const handleSwitchToLogin = () => navigate("/login");
@@ -19,7 +32,6 @@ function Signup() {
       className="min-h-screen bg-dark-950 text-white font-sans relative overflow-hidden flex items-center justify-center"
       style={{ fontFeatureSettings: '"rlig" 1, "calt" 1' }}
     >
-      {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-20"
         style={{
@@ -37,8 +49,6 @@ function Signup() {
             "radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)",
         }}
       ></div>
-
-      {/* Signup Form */}
       <div className="relative z-10 w-full max-w-md mx-auto px-6">
         <div className="text-center mb-8">
           {/* Logo */}

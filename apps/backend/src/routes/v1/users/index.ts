@@ -36,7 +36,7 @@ router.post("/create", async (req, res) => {
       data: {
         email: safeparsedData.data.email,
         password: hashPassoword,
-        name: safeparsedData.data.username,
+        createdAt: new Date(Date.now()),
       },
     });
     res.send({
