@@ -22,11 +22,11 @@ export const CreateMonitors = () => {
         }} />
 
       <div className="relative z-10 flex justify-center">
-        <div className="flex-1 max-w-6xl p-16">
+        <div className="flex-1 max-w-6xl p-11">
           <DashBoardHeader>Create Monitors</DashBoardHeader>
 
           {/* Monitor Config Section */}
-          <div className="flex justify-between gap-10 mt-10">
+          <div className="flex justify-between gap-6 mt-10">
             <Monitorheader
               name="What to monitor"
               description="Configure the target website you want to monitor. You'll find the advanced configuration below, in the advanced settings section."
@@ -48,6 +48,7 @@ export const CreateMonitors = () => {
                   <a href="#" className="text-purple-400 underline">Upgrade your account</a> to enable more options.
                 </p>
               </div>
+<div className="border-t border-gray-700 my-4"></div>
 
               <div>
                 <label className="text-xs font-medium mb-3 block">URL to monitor</label>
@@ -66,7 +67,7 @@ export const CreateMonitors = () => {
           </div>
 
           {/* Divider Line */}
-          <div className="border-t border-gray-700 my-12"></div>
+          <div className="border-t border-gray-700 my-8"></div>
 
           {/* On-call Escalation Section */}
           <div className="flex justify-between gap-10">
@@ -87,6 +88,7 @@ export const CreateMonitors = () => {
                   the <a href="#" className="text-purple-400 underline">current on-call person</a>.
                 </p>
               </div>
+<div className="border-t border-gray-700 my-6"></div>
 
               <div>
                 <label className="text-xs font-medium mb-3 block">If the on-call person doesn't acknowledge the incident</label>
