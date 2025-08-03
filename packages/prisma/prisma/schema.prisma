@@ -30,8 +30,22 @@ model Website{
   url String
   timeAdded DateTime
   websiteStatus WebsiteStatus[]
+  alert  String
+  acknowledge       String
+  escalationPolicy  String?
+  notificationPref  NotificationPreference @relation(fields: [notificationPrefId], references: [id])
+  notificationPrefId String
   owner       User      @relation("UserWebsites", fields: [ownerId], references: [id])
   ownerId     String
+}
+
+model NotificationPreference {
+  id          String  @id @default(uuid())
+  notifyCall  Boolean @default(false)
+  notifySMS   Boolean @default(false)
+  notifyEmail Boolean @default(false)
+  notifyPush  Boolean @default(false)
+  websites    Website[]
 }
 
 model Region {
