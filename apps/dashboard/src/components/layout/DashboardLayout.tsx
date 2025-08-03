@@ -1,10 +1,11 @@
-import { Monitors } from "./Monitors";
-import Sidebar from "./Sidebarcomponent";
+import { Outlet, useNavigate } from "react-router-dom";
+import Sidebar from "../dashboard/Sidebarcomponent";
 
-export const Dashboard = () => {
+export const DashboardLayout = () => {
+  const navigate = useNavigate();
+
   function handleNavigate(item: any) {
-    console.log("Navigating to:", item.href);
-    // Navigation logic goes here
+    if (item?.href) navigate(item.href);
   }
 
   return (
@@ -30,7 +31,7 @@ export const Dashboard = () => {
           className="relative"
         />
         <div className="flex-1 p-6">
-          <Monitors />
+          <Outlet />
         </div>
       </div>
     </div>

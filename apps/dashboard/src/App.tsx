@@ -9,6 +9,9 @@ import HomePage from "./components/home/HomePage";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import { Dashboard } from "./components/dashboard/Dashboard";
+import { CreateMonitors } from "./components/createMonitors/createMonitors";
+import { DashboardLayout } from "./components/layout/DashboardLayout";
+import { Monitors } from "./components/dashboard/Monitors";
 
 function App() {
   return (
@@ -25,7 +28,12 @@ function App() {
         />
         {/* Login route - /login */}
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/createmonitor" element={<CreateMonitors/>} /> */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<Monitors />} />
+          <Route path="createmonitor" element={<CreateMonitors />} />
+        </Route>
         {/* Signup route - /signup */}
         <Route path="/signup" element={<Signup />} />
         {/* Redirect any unknown routes to home */}

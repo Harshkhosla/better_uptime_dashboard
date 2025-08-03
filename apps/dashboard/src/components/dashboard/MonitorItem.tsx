@@ -1,10 +1,10 @@
-const StatusIndicator = ({ status = "up" }:any) => {
+type Status = "up" | "down" | "warning";
+const StatusIndicator = ({ status = "up" }: { status?: Status }) => {
   const statusClasses = {
     up: "bg-green-500",
     down: "bg-red-500",
     warning: "bg-yellow-500",
   };
-
   return (
     <div
       className={`w-2 h-2 rounded-full ${statusClasses[status]} flex-shrink-0`}

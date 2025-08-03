@@ -57,7 +57,13 @@ const defaultSidebarConfig: SidebarConfig = {
     href: "/",
   },
   navigation: [
-    { id: "Monitors", label: "Monitors", icon: Home, href: "/", badge: null },
+    {
+      id: "Monitors",
+      label: "Monitors",
+      icon: Home,
+      href: "/dashboard",
+      badge: null,
+    },
     { id: "users", label: "Users", icon: Users, href: "/users", badge: "12" },
     {
       id: "analytics",
