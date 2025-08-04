@@ -17,6 +17,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "redis": "^5.7.0"
+    "redis": "^5.7.0",
+    "prisma": "workspace:*"
   }
 }

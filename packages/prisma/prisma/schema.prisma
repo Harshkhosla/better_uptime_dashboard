@@ -33,8 +33,8 @@ model Website{
   alert  String?
   acknowledge       String?
   escalationPolicy  String?
-  notificationPref  NotificationPreference @relation(fields: [notificationPrefId], references: [id])
-  notificationPrefId String
+  notificationPref  NotificationPreference? @relation(fields: [notificationPrefId], references: [id])
+  notificationPrefId String?
   owner       User      @relation("UserWebsites", fields: [ownerId], references: [id])
   ownerId     String
 }
