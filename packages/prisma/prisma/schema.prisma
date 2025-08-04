@@ -30,8 +30,8 @@ model Website{
   url String
   timeAdded DateTime
   websiteStatus WebsiteStatus[]
-  alert  String
-  acknowledge       String
+  alert  String?
+  acknowledge       String?
   escalationPolicy  String?
   notificationPref  NotificationPreference @relation(fields: [notificationPrefId], references: [id])
   notificationPrefId String
