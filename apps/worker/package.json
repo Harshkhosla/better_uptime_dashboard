@@ -1,0 +1,16 @@
+{
+  "name": "worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint . --ext .js,.ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
