@@ -3,7 +3,7 @@
 import { faker } from "@faker-js/faker";
 import { Prismaclient } from "../src";
 
-const prisma =  Prismaclient;
+const prisma = Prismaclient;
 
 async function main() {
   // Create Region
@@ -34,29 +34,28 @@ async function main() {
   });
 
   // Create additional websites
-for (let i = 0; i < 3; i++) {
-  const newWebsite = await prisma.website.create({
-    data: {
-      url: faker.internet.url(),
-      timeAdded: new Date(),
-      alert: faker.lorem.words(2),
-      acknowledge: faker.lorem.sentence(),
-      escalationPolicy: `Level ${i + 2}`,
-      notificationPrefId: notificationPref.id,
-      ownerId: user.id,
-    },
-  });
+  for (let i = 0; i < 3; i++) {
+    const newWebsite = await prisma.website.create({
+      data: {
+        url: faker.internet.url(),
+        timeAdded: new Date(),
+        alert: faker.lorem.words(2),
+        acknowledge: faker.lorem.sentence(),
+        escalationPolicy: `Level ${i + 2}`,
+        notificationPrefId: notificationPref.id,
+        ownerId: user.id,
+      },
+    });
 
-  await prisma.websiteStatus.create({
-    data: {
-      responseTime: faker.number.int({ min: 100, max: 600 }),
-      statusCheck: "Up",
-      regionId: region.id,
-      websiteId: newWebsite.id,
-    },
-  });
-}
-
+    await prisma.websiteStatus.create({
+      data: {
+        responseTime: faker.number.int({ min: 100, max: 600 }),
+        statusCheck: "Up",
+        regionId: region.id,
+        websiteId: newWebsite.id,
+      },
+    });
+  }
 
   console.log("✅ Seed completed");
 }

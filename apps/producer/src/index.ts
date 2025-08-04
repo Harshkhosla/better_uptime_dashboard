@@ -1,8 +1,7 @@
 import { createClient } from "redis";
 import { Prismaclient } from "prisma/client";
 
-
-const INTERVAL_MS = 3 * 60 * 1000; 
+const INTERVAL_MS = 3 * 60 * 1000;
 const streamKey = "betterUptime:websites";
 const consumerGroups = {
   usa: ["usa-1", "usa-2"],
@@ -11,15 +10,14 @@ const consumerGroups = {
 };
 
 async function processWebsites() {
-
   const client = createClient();
 
   client.on("error", (err) => console.error("Redis Client Error", err));
 
   await client.connect();
-   const urls = await Prismaclient.website.findMany();
-   for (const groupName of Object.keys(consumerGroups)) {
-    console.log(groupName)
+  const urls = await Prismaclient.website.findMany();
+  for (const groupName of Object.keys(consumerGroups)) {
+    console.log(groupName);
     try {
       await client.xGroupCreate(streamKey, groupName, "$", { MKSTREAM: true });
       console.log(`Consumer group "${groupName}" created.`);
@@ -33,14 +31,13 @@ async function processWebsites() {
     }
   }
 
-
-for(const site of urls){
-  const messageId = await client.XADD(streamKey,"*",{
-    url:site.url,
-   d: site.id.toString(),
-  })
-   console.log(`Message added: ${messageId} → ${site.url}`);
-}
+  for (const site of urls) {
+    const messageId = await client.XADD(streamKey, "*", {
+      url: site.url,
+      d: site.id.toString(),
+    });
+    console.log(`Message added: ${messageId} → ${site.url}`);
+  }
 
   await client.quit();
 }

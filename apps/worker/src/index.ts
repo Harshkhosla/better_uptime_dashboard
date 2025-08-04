@@ -15,13 +15,16 @@ async function startConsumer(client: any, groupName: string, consumer: string) {
         groupName,
         consumer,
         { key: streamKey, id: ">" },
-        { COUNT: 1, BLOCK: 5000 } // Wait max 5 seconds if no message
+        { COUNT: 1, BLOCK: 5000 }, // Wait max 5 seconds if no message
       );
 
       if (res) {
         for (const stream of res) {
           for (const message of stream.messages) {
-            console.log(`📨 [${groupName}/${consumer}] Message ID:`, message.id);
+            console.log(
+              `📨 [${groupName}/${consumer}] Message ID:`,
+              message.id,
+            );
             console.log("📦 Fields:", message.message);
 
             // ✅ Acknowledge message
