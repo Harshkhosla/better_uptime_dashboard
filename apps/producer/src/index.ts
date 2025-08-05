@@ -15,7 +15,6 @@ async function processWebsites() {
   client.on("error", (err) => console.error("Redis Client Error", err));
 
   await client.connect();
-  const urls = await Prismaclient.website.findMany();
   for (const groupName of Object.keys(consumerGroups)) {
     console.log(groupName);
     try {
@@ -31,10 +30,11 @@ async function processWebsites() {
     }
   }
 
+  const urls = await Prismaclient.website.findMany();
   for (const site of urls) {
     const messageId = await client.XADD(streamKey, "*", {
       url: site.url,
-      d: site.id.toString(),
+      id: site.id.toString(),
     });
     console.log(`Message added: ${messageId} → ${site.url}`);
   }

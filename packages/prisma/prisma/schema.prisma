@@ -25,6 +25,15 @@ model User {
   regions   Region[]  @relation("UserRegions") 
 }
 
+model NotificationPreference {
+  id          String  @id @default(uuid())
+  notifyCall  Boolean @default(false)
+  notifySMS   Boolean @default(false)
+  notifyEmail Boolean @default(false)
+  notifyPush  Boolean @default(false)
+  websites    Website[]
+}
+
 model Website{
   id  String @id @default(uuid())
   url String
@@ -38,24 +47,6 @@ model Website{
   owner       User      @relation("UserWebsites", fields: [ownerId], references: [id])
   ownerId     String
 }
-
-model NotificationPreference {
-  id          String  @id @default(uuid())
-  notifyCall  Boolean @default(false)
-  notifySMS   Boolean @default(false)
-  notifyEmail Boolean @default(false)
-  notifyPush  Boolean @default(false)
-  websites    Website[]
-}
-
-model Region {
-  id    String           @id @default(uuid())
-  name  String
-  websiteStatuses WebsiteStatus[]
-  users   User[]    @relation("UserRegions")
-}
-
-
 model WebsiteStatus{
    id  String @id @default(uuid())
    responseTime  Int
@@ -64,6 +55,13 @@ model WebsiteStatus{
    regionId String
    website Website @relation(fields: [websiteId],references: [id])
    websiteId String
+}
+
+model Region {
+  id    String           @id @default(uuid())
+  name  String
+  websiteStatuses WebsiteStatus[]
+  users   User[]    @relation("UserRegions")
 }
 
 enum statusCheck{
