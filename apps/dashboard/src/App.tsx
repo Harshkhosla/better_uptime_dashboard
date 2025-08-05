@@ -8,10 +8,10 @@ import Layout from "./components/layout/Layout";
 import HomePage from "./components/home/HomePage";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
-import { Dashboard } from "./components/dashboard/Dashboard";
-import { CreateMonitors } from "./components/createMonitors/createMonitors";
+import { CreateMonitors } from "./components/createMonitors/CreateMonitors";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 import { Monitors } from "./components/dashboard/Monitors";
+import { MonitorDetail } from "./components/dashboard/MonitorDetail";
 
 function App() {
   return (
@@ -33,6 +33,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Monitors />} />
           <Route path="createmonitor" element={<CreateMonitors />} />
+          <Route path="monitor/:id" element={<MonitorDetail />} />
         </Route>
         {/* Signup route - /signup */}
         <Route path="/signup" element={<Signup />} />

@@ -18,9 +18,13 @@ export const MonitorItem = ({
   status,
   uptime,
   lastChecked,
+  onClick,
 }: any) => {
   return (
-    <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors">
+    <div
+      onClick={onClick}
+      className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <StatusIndicator status={status} />

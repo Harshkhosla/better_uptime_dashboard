@@ -79,6 +79,14 @@ export const authApi = createApi({
       }),
       providesTags: ["Websites"],
     }),
+    getwebsitebyId: builder.query<WebsiteResponse, { websiteId: string }>({
+      query: ({ websiteId }) => ({
+        url: "website/status",
+        method: "GET",
+        params: { websiteId },
+      }),
+      providesTags: ["Websites"],
+    }),
   }),
 });
 
@@ -87,4 +95,5 @@ export const {
   useLoginMutation,
   useGetwebsitesQuery,
   useCreatemonitorMutation,
+  useGetwebsitebyIdQuery,
 } = authApi;

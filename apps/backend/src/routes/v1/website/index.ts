@@ -54,18 +54,24 @@ router.get("/website/all", authMiddleware, async (req, res) => {
   return;
 });
 
-router.get("/status/:websiteId", authMiddleware, async (req, res) => {
-  if (!req.params.websiteId) {
-    res.status(403).json({
-      message: "yOU HAVE NOT PROVIDED US WITH THE URL",
+router.get("/status", authMiddleware, async (req, res) => {
+  const websiteIdParam = req.query.websiteId;
+
+  // Check if it's a string
+  if (!websiteIdParam || typeof websiteIdParam !== "string") {
+    return res.status(400).json({
+      message: "You have not provided a valid websiteId.",
     });
-    return;
   }
   const website = await Prismaclient.website.findFirst({
     where: {
       // @ts-ignore
       ownerId: req.UserID,
-      id: req.params.websiteId,
+      id: websiteIdParam,
+    },
+    include: {
+      websiteStatus: true,
+      notificationPref: true,
     },
     orderBy: {
       timeAdded: "desc",
@@ -77,10 +83,7 @@ router.get("/status/:websiteId", authMiddleware, async (req, res) => {
     });
   }
 
-  res.status(200).json({
-    id: website?.id,
-    url: website?.url,
-  });
+  res.status(200).json(website);
   return;
 });
 export const WebsiteRouter = router;

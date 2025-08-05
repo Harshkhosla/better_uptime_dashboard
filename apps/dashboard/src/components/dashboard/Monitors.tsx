@@ -3,12 +3,25 @@ import { DashBoardHeader } from "@repo/ui/DashboardHeader";
 import { MonitorItem } from "./MonitorItem";
 import { useNavigate } from "react-router-dom";
 import { useGetwebsitesQuery } from "../../redux/api/authApi";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useEffect } from "react";
+import { setWebsites } from "../../redux/slice/webSlice";
 
 export const Monitors = () => {
+  const { websites: monitors } = useAppSelector((state) => state.website);
   const { data: websitesData, isLoading, error } = useGetwebsitesQuery();
-  // @ts-ignore
-  const monitors = websitesData?.websites[0]?.websites;
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    // @ts-ignore
+    if (websitesData?.websites?.[0]?.websites) {
+      // @ts-ignore
+      const fetchedMonitors = websitesData.websites[0].websites;
+      dispatch(setWebsites({ websites: fetchedMonitors }));
+    }
+  }, [websitesData, dispatch]);
+
   function handlenavigate() {
     navigate("/dashboard/createmonitor");
   }
@@ -23,7 +36,7 @@ export const Monitors = () => {
           className="py-2"
         />
         <div className="mt-10">
-          {monitors?.length === 0 ? (
+          {isLoading ? (
             <div className="text-center py-12">
               <svg
                 className="w-12 h-12 text-gray-500 mx-auto mb-4"
@@ -54,16 +67,29 @@ export const Monitors = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {monitors?.map((monitor: any) => (
-                <MonitorItem
-                  key={monitor.id}
-                  name={monitor.name}
-                  url={monitor.url}
-                  status={monitor.status}
-                  uptime={monitor.uptime}
-                  lastChecked={monitor.lastChecked}
-                />
-              ))}
+              {monitors?.map((monitor: any, key: any) => {
+                const uptime = new Date(monitor.timeAdded);
+                const diffMs = Date.now() - uptime.getTime();
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+                const handleClick = () => {
+                  console.log(`Monitor clicked: ${monitor.id}`);
+                  navigate(`/dashboard/monitor/${monitor.id}`);
+                };
+                return (
+                  <>
+                    <MonitorItem
+                      key={key}
+                      name={monitor.alert}
+                      url={monitor.url}
+                      status={monitor.status}
+                      uptime={`${diffDays} days ago`}
+                      lastChecked={monitor.lastChecked}
+                      onClick={handleClick}
+                    />
+                  </>
+                );
+              })}
             </div>
           )}
         </div>
