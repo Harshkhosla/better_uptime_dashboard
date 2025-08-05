@@ -1,84 +1,126 @@
-   //     const errorStreamData = await client.xRead(
-    //       [{ key: streamErrorKey, id: "0" }],
-    //       { COUNT: 100 }
-    //     );
-
-    // if (Array.isArray(errorStreamData)) {
-    //     for (const stream of errorStreamData) {
-    //         // @ts-ignore
-    //       for (const message of stream?.messages) {
-    //         console.log("Error Message:", message);
-    //       }
-    //     }
-    //   }
 import { createClient } from "redis";
+
 import { Prismaclient } from "prisma/client";
 
 const streamBulkKey = "bulkUpdateQueue";
+const streamErrorKey = "errorProcessingQueue";
+
+async function processBulkStream(
+  client: ReturnType<typeof createClient>,
+  lastBulkId: string,
+) {
+  const bulkStreamData = await client.xRead(
+    [{ key: streamBulkKey, id: lastBulkId }],
+    { COUNT: 100, BLOCK: 5000 },
+  );
+
+  if (Array.isArray(bulkStreamData)) {
+    for (const stream of bulkStreamData) {
+      // @ts-ignore
+      for (const message of stream.messages) {
+        lastBulkId = message.id;
+
+        const region = await Prismaclient.region.findFirst({
+          where: {
+            name: message.message.origin,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        const created = await Prismaclient.websiteStatus.create({
+          // @ts-ignore
+          data: {
+            regionId: region?.id,
+            websiteId: message.message.id,
+            responseTime: 500,
+            statusCheck: "Up",
+          },
+        });
+
+        console.log("✅ Website data saved:", created);
+      }
+    }
+
+    // Trim bulk stream
+    // @ts-ignore
+    await client.xTrim(streamBulkKey, "MINID", lastBulkId);
+    console.log("🧹 Bulk stream trimmed up to:", lastBulkId);
+  } else {
+    console.log("⏳ No new bulk messages.");
+  }
+
+  return lastBulkId;
+}
+
+async function processErrorStream(
+  client: ReturnType<typeof createClient>,
+  lastErrorId: string,
+) {
+  const errorStreamData = await client.xRead(
+    [{ key: streamErrorKey, id: lastErrorId }],
+    { COUNT: 100, BLOCK: 5000 },
+  );
+
+  if (Array.isArray(errorStreamData)) {
+    for (const stream of errorStreamData) {
+      // @ts-ignore
+      for (const message of stream.messages) {
+        lastErrorId = message.id;
+        const region = await Prismaclient.region.findFirst({
+          where: {
+            name: message.message.origin,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        const created = await Prismaclient.websiteStatus.create({
+          // @ts-ignore
+          data: {
+            regionId: region?.id,
+            websiteId: message.message.id,
+            responseTime: 500,
+            statusCheck: "DOWN",
+          },
+        });
+        console.error("🚨 Error Message:", created);
+      }
+    }
+
+    // @ts-ignore
+    await client.xTrim(streamErrorKey, "MINID", lastErrorId);
+    console.log("🧹 Error stream trimmed up to:", lastErrorId);
+  } else {
+    console.log("⏳ No new error messages.");
+  }
+
+  return lastErrorId;
+}
 
 async function main() {
   const client = createClient();
-
   client.on("error", (err) => console.error("Redis Client Error", err));
   await client.connect();
 
-  let lastId = "0";
+  let lastBulkId = "0";
+  let lastErrorId = "0";
 
   try {
     while (true) {
-      const bulkStreamData = await client.xRead(
-        [{ key: streamBulkKey, id: lastId }],
-        { COUNT: 100, BLOCK: 5000 } 
-      );
+      // Process bulk messages
+      lastBulkId = await processBulkStream(client, lastBulkId);
 
-      let totalMessages = 0;
-
-      if (Array.isArray(bulkStreamData)) {
-        for (const stream of bulkStreamData) {
-            // @ts-ignore
-          for (const message of stream.messages) {
-            totalMessages++;
-            lastId = message.id;
-            // TODO:can save this backend computatioon start by hardcoding then updating
-            const regionid = await Prismaclient.region.findFirst({
-              where: {
-                name: message.message.origin,
-              },
-              select: {
-                id: true,
-              },
-            });
-
-            const createddata = await Prismaclient.websiteStatus.create({
-                 // @ts-ignore
-              data: {
-                regionId: regionid?.id,
-                websiteId: message.message.id,
-                //TODO: This need to be passed from the worker 
-                responseTime: 500,
-                statusCheck: "Up",
-              },
-            });
-
-            console.log("✅ Website data saved:", createddata);
-          }
-        }
-
-        if (lastId !== "0") {
-             // @ts-ignore
-          await client.xTrim(streamBulkKey, "MINID", lastId as string);
-          console.log("🧹 Stream trimmed up to ID:", lastId);
-        }
-
-        console.log("🔁 Total messages processed:", totalMessages);
-      } else {
-        console.log("⏳ No new messages, waiting...");
-      }
+      // Process error messages once per loop
+      lastErrorId = await processErrorStream(client, lastErrorId);
     }
   } catch (err) {
-    console.error("❌ Error in stream processing:", err);
+    console.error("❌ Error in main loop:", err);
   } finally {
     await client.quit();
+    await Prismaclient.$disconnect();
   }
 }
 

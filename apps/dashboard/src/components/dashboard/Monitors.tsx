@@ -2,22 +2,17 @@ import { Button } from "@repo/ui/button";
 import { DashBoardHeader } from "@repo/ui/DashboardHeader";
 import { MonitorItem } from "./MonitorItem";
 import { useNavigate } from "react-router-dom";
+import { useGetwebsitesQuery } from "../../redux/api/authApi";
 
 export const Monitors = () => {
-  const monitors = [
-    {
-      id: 1,
-      name: "google.com",
-      url: "https://google.com",
-      status: "up",
-      uptime: "Up · 4h 15m",
-      lastChecked: "3m",
-    },
-  ];
+  const { data: websitesData, isLoading, error } = useGetwebsitesQuery();
+  // @ts-ignore
+  const monitors = websitesData?.websites[0]?.websites;
   const navigate = useNavigate();
   function handlenavigate() {
     navigate("/dashboard/createmonitor");
   }
+
   return (
     <div>
       <div className="max-w-7xl mx-auto mt-10 px-10 sm:px-6 lg:px-8 py-8">
@@ -28,7 +23,7 @@ export const Monitors = () => {
           className="py-2"
         />
         <div className="mt-10">
-          {monitors.length === 0 ? (
+          {monitors?.length === 0 ? (
             <div className="text-center py-12">
               <svg
                 className="w-12 h-12 text-gray-500 mx-auto mb-4"
@@ -59,7 +54,7 @@ export const Monitors = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {monitors.map((monitor) => (
+              {monitors?.map((monitor: any) => (
                 <MonitorItem
                   key={monitor.id}
                   name={monitor.name}

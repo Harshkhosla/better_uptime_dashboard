@@ -2,8 +2,12 @@ import { Button } from "@repo/ui/button";
 import { DashBoardHeader } from "@repo/ui/DashboardHeader";
 import { Monitorheader } from "@repo/ui/monitorheader";
 import React, { useState } from "react";
+import { useCreatemonitorMutation } from "../../redux/api/authApi";
+import { useNavigate } from "react-router-dom";
 
 export const CreateMonitors = () => {
+  const [Createmonitor] = useCreatemonitorMutation();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     url: "https://",
     alertType: "unavailable",
@@ -37,8 +41,10 @@ export const CreateMonitors = () => {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
+  const handleSubmit = async () => {
+    const result = await Createmonitor({ formData: formData }).unwrap();
+    console.log("Form submitted:", result);
+    navigate("/dashboard");
   };
 
   return (

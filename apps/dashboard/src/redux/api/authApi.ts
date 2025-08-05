@@ -19,6 +19,17 @@ export interface AuthError {
   message: string;
   status: number;
 }
+export interface Website {
+  id: string;
+  name: string;
+  url: string;
+  status: string;
+  // Add other fields as needed
+}
+
+export interface WebsiteResponse {
+  websites: Website[];
+}
 
 export const authApi = createApi({
   reducerPath: "CreateApi",
@@ -34,7 +45,7 @@ export const authApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["User"],
+  tagTypes: ["User", "Websites"],
   endpoints: (builder) => ({
     signup: builder.mutation<SignupResponse, SignupRequest>({
       query: (credentials) => ({
@@ -53,7 +64,27 @@ export const authApi = createApi({
       }),
       invalidatesTags: ["User"],
     }),
+    createmonitor: builder.mutation<any, any>({
+      query: (credentials) => ({
+        url: "/website/website",
+        method: "POST",
+        body: credentials,
+      }),
+      invalidatesTags: ["Websites"],
+    }),
+    getwebsites: builder.query<WebsiteResponse, void>({
+      query: () => ({
+        url: "website/website/all",
+        method: "GET",
+      }),
+      providesTags: ["Websites"],
+    }),
   }),
 });
 
-export const { useSignupMutation, useLoginMutation } = authApi;
+export const {
+  useSignupMutation,
+  useLoginMutation,
+  useGetwebsitesQuery,
+  useCreatemonitorMutation,
+} = authApi;

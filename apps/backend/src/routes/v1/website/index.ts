@@ -5,15 +5,27 @@ import { authMiddleware } from "../../../middleware/middleware";
 const router: Router = Router();
 
 router.post("/website", authMiddleware, async (req, res) => {
-  if (!req.body.url) {
+  if (!req.body) {
     res.status(403).json({
       message: "yOU HAVE NOT PROVIDED US WITH THE URL",
     });
     return;
   }
+  const { url, alertType, escalationPolicy, notify } = req.body.formData;
+  const notificationPref = await Prismaclient.notificationPreference.create({
+    data: {
+      notifyCall: notify.call,
+      notifySMS: notify.sms,
+      notifyEmail: notify.email,
+      notifyPush: notify.push,
+    },
+  });
   const website = await Prismaclient.website.create({
     data: {
-      url: req.body.url,
+      url: url,
+      alert: alertType,
+      escalationPolicy: escalationPolicy,
+      notificationPrefId: notificationPref.id,
       // @ts-ignore
       ownerId: req?.UserID,
       timeAdded: new Date(),
@@ -22,6 +34,22 @@ router.post("/website", authMiddleware, async (req, res) => {
 
   res.status(200).json({
     id: website.id,
+  });
+  return;
+});
+
+router.get("/website/all", authMiddleware, async (req, res) => {
+  const websites = await Prismaclient.user.findMany({
+    where: {
+      // @ts-ignore
+      id: req?.UserID,
+    },
+    include: {
+      websites: true,
+    },
+  });
+  res.status(200).json({
+    websites: websites,
   });
   return;
 });
