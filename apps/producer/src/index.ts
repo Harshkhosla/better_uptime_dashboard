@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 import { Prismaclient } from "prisma/client";
 
-const INTERVAL_MS = 60 * 60 * 1000;
+const INTERVAL_MS = 3 * 60 * 1000;
 const streamKey = "betterUptime:websites";
 const consumerGroups = {
   usa: ["usa-1", "usa-2"],

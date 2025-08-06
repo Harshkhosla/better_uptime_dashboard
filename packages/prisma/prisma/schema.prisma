@@ -38,6 +38,8 @@ model Website{
   id  String @id @default(uuid())
   url String
   timeAdded DateTime
+  uptime DateTime?
+  incident Int?@default(0)
   websiteStatus WebsiteStatus[]
   alert  String?
   acknowledge       String?
@@ -55,6 +57,7 @@ model WebsiteStatus{
    regionId String
    website Website @relation(fields: [websiteId],references: [id])
    websiteId String
+   timestamp DateTime?
 }
 
 model Region {

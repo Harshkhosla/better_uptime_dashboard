@@ -28,14 +28,17 @@ async function processBulkStream(
             id: true,
           },
         });
-
+        let duration = Number.isFinite(Number(message.message.duration))
+          ? message.message.duration
+          : 0;
         const created = await Prismaclient.websiteStatus.create({
           // @ts-ignore
           data: {
             regionId: region?.id,
             websiteId: message.message.id,
-            responseTime: 500,
+            responseTime: Number(duration),
             statusCheck: "Up",
+            timestamp: new Date(),
           },
         });
 
@@ -76,14 +79,26 @@ async function processErrorStream(
             id: true,
           },
         });
-
+        let duration = Number.isFinite(Number(message.message.duration))
+          ? message.message.duration
+          : 0;
+        await Prismaclient.website.update({
+          where: {
+            id: message?.message?.id,
+          },
+          data: {
+            uptime: new Date(),
+            incident: { increment: 1 },
+          },
+        });
         const created = await Prismaclient.websiteStatus.create({
           // @ts-ignore
           data: {
             regionId: region?.id,
             websiteId: message.message.id,
-            responseTime: 500,
+            responseTime: Number(duration),
             statusCheck: "DOWN",
+            timestamp: new Date(),
           },
         });
         console.error("🚨 Error Message:", created);

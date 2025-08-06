@@ -12,14 +12,15 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
+    "@repo/ui": "workspace:*",
     "axios": "^1.11.0",
+    "common": "workspace:*",
     "lucide-react": "^0.263.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.20.1",
-    "common": "workspace:*",
-    "@repo/ui": "workspace:*"
+    "recharts": "^3.1.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

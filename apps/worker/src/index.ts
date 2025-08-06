@@ -1,4 +1,5 @@
 import { createClient } from "redis";
+import { performance } from "perf_hooks";
 
 const streamKey = "betterUptime:websites";
 const streamerrorkey = "errorProcessingQueue";
@@ -12,13 +13,19 @@ const consumerGroups = {
 
 async function pingAndProcess(message: any, client: any, originalMessage: any) {
   try {
+    const start = performance.now();
     const res = await fetch(message.url, { method: "GET" });
+    const end = performance.now();
+    const duration = end - start;
+    console.log(duration, "ehhehehehehehhehheehhehhe the response");
+    const safeDuration = Number.isFinite(duration) ? duration.toString() : "0";
     if (res.status < 400) {
       await client.xAdd(streambulkkey, "*", {
         url: message.url,
         id: message.id,
         status: res.status.toString(),
         timestamp: Date.now().toString(),
+        duration: safeDuration,
         origin: originalMessage.groupName,
       });
     } else {
@@ -27,6 +34,7 @@ async function pingAndProcess(message: any, client: any, originalMessage: any) {
         id: message.id,
         status: res.status.toString(),
         timestamp: Date.now().toString(),
+        duration: safeDuration,
         origin: originalMessage.groupName,
       });
     }
@@ -37,6 +45,7 @@ async function pingAndProcess(message: any, client: any, originalMessage: any) {
       id: message.id,
       error: (err as Error).message,
       timestamp: Date.now().toString(),
+      duration: "0",
       origin: originalMessage.groupName,
     });
     console.log(err, "sample here");
