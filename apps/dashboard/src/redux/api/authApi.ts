@@ -24,6 +24,9 @@ export interface Website {
   name: string;
   url: string;
   status: string;
+  incident: number;
+  uptime: Date;
+  websiteStatus: any;
   // Add other fields as needed
 }
 
@@ -79,7 +82,7 @@ export const authApi = createApi({
       }),
       providesTags: ["Websites"],
     }),
-    getwebsitebyId: builder.query<WebsiteResponse, { websiteId: string }>({
+    getwebsitebyId: builder.query<Website, { websiteId: string }>({
       query: ({ websiteId }) => ({
         url: "website/status",
         method: "GET",
