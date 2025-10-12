@@ -44,4 +44,4 @@ async function processWebsites() {
 
 processWebsites();
 
-setInterval(processWebsites, INTERVAL_MS);
+// setInterval(processWebsites, INTERVAL_MS);
