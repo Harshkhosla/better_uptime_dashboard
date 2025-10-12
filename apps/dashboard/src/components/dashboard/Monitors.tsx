@@ -9,6 +9,8 @@ import { setWebsites } from "../../redux/slice/webSlice";
 
 export const Monitors = () => {
   const { websites: monitors } = useAppSelector((state) => state.website);
+  console.log(monitors,'monitorsmonitors');
+  
   const { data: websitesData, isLoading, error } = useGetwebsitesQuery();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -73,7 +75,7 @@ export const Monitors = () => {
                 const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
                 const handleClick = () => {
-                  console.log(`Monitor clicked: ${monitor.id}`);
+                  console.log(`Monitor clicked: ${monitor}`);
                   navigate(`/dashboard/monitor/${monitor.id}`);
                 };
                 return (

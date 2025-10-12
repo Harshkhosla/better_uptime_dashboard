@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-
+import nodemailer from "nodemailer";
 import { Prismaclient } from "prisma/client";
 
 const streamBulkKey = "bulkUpdateQueue";
@@ -42,7 +42,7 @@ async function processBulkStream(
           },
         });
 
-        console.log("✅ Website data saved:", created);
+        // console.log("✅ Website data saved:", created);
       }
     }
 
@@ -55,6 +55,38 @@ async function processBulkStream(
   }
 
   return lastBulkId;
+}
+
+
+async function triggerAction(websitedata:any,url:string){
+    console.log(websitedata.ownerId,"cdkjnkjdvnskvndsjnvnsskdndskjvnsdvkndsv")
+
+   const userdata = await Prismaclient.user.findFirst({
+    where:{
+      id:websitedata.ownerId
+    }
+   })
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'Harshkhosla9945@gmail.com',
+            pass: 'smos vryu mccy rhqp',
+        },
+    });
+
+    const mailOptions = {
+    from: `"Uptime Monitor" <Harshkhosla9945@gmail.com>`,
+    to: userdata?.email,
+    subject: `🚨 Alert: Your website is DOWN`,
+    html: `
+      <h3>Website Down Alert</h3>
+      <p>Your website <b>${url}</b> is currently <span style="color: red;">DOWN</span>.</p>
+      <p>Please investigate immediately.</p>
+    `,
+  };
+   console.log(userdata,"cdkjnkjdvnskvndsjnvnsskdndskjvnsdvkndsv")
+   await transporter.sendMail(mailOptions);
 }
 
 async function processErrorStream(
@@ -82,15 +114,19 @@ async function processErrorStream(
         let duration = Number.isFinite(Number(message.message.duration))
           ? message.message.duration
           : 0;
-        await Prismaclient.website.update({
+
+         
+       const websiteadata =  await Prismaclient.website.update({
           where: {
             id: message?.message?.id,
           },
           data: {
             uptime: new Date(),
             incident: { increment: 1 },
+            alert:"ALERT"
           },
         });
+        // await triggerAction (websiteadata,websiteadata.url)
         const created = await Prismaclient.websiteStatus.create({
           // @ts-ignore
           data: {
@@ -101,7 +137,7 @@ async function processErrorStream(
             timestamp: new Date(),
           },
         });
-        console.error("🚨 Error Message:", created);
+        // console.error("🚨 Error Message:", created);
       }
     }
 

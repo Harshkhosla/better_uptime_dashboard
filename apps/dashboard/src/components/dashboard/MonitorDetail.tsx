@@ -36,6 +36,11 @@ export const MonitorDetail = () => {
     error,
   } = useGetwebsitebyIdQuery({ websiteId: id! });
 
+  const data = websiteData?.websiteStatus.filter((data:any)=>{
+   console.log(data.statusCheck,'sdvvsdsv')
+  })
+
+console.log(data,"sampldata")
   if (isLoading) return <div className="text-white">Loading...</div>;
   if (error)
     return <div className="text-red-500">Failed to load monitor data.</div>;
@@ -47,10 +52,11 @@ export const MonitorDetail = () => {
     <div className="max-w-7xl mx-auto mt-10 px-10 sm:px-6 lg:px-8 py-8">
       {/* Status Header */}
       <div className="flex items-center space-x-4 pb-16">
-        <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse" />
+      {websiteData?.websiteStatus?.[0]?.statusCheck==='UP'?  <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse" />:  <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse" />}
+        {/* <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse" /> */}
         <div>
           <h1 className="text-2xl font-semibold">{websiteData?.url}</h1>
-          <p className="text-green-400 text-sm">Up · Checked every 5 minutes</p>
+          <p className ={` ${websiteData?.websiteStatus?.[0]?.statusCheck === 'UP' ? 'text-green-400' : 'text-red-500'}  text-sm `}>{websiteData?.websiteStatus?.[0]?.statusCheck} · Checked every 5 minutes</p>
         </div>
         <div className="ml-auto flex items-center space-x-4 text-sm mt-14 text-gray-400">
           <button className="hover:underline">Send test alert</button>

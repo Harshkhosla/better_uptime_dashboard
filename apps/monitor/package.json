@@ -12,11 +12,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/nodemailer": "^6.4.17",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "nodemailer": "^7.0.5",
     "nodemon": "^3.1.10",
     "prisma": "workspace:*",
     "redis": "^5.7.0"
