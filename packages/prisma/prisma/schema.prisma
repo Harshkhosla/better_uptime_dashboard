@@ -23,8 +23,27 @@ model User {
   updatedAt DateTime  @updatedAt
   websites  Website[] @relation("UserWebsites")
   regions   Region[]  @relation("UserRegions") 
+  userDetails UserDetails?  @relation("UserDetails")
+  userDemoGraphs UserDemoGraph[] @relation("UserDemoGraphs")
 }
 
+model UserDetails {
+  id    String @id @default(uuid())
+  owner       User     @relation("UserDetails", fields: [ownerId], references: [id])
+  age     Int
+  weight Int
+  height  Int
+  bmi  Int
+  preferences String 
+  ownerId     String @unique
+}
+
+model UserDemoGraph{
+  id String @id @default(uuid())
+  owner       User     @relation("UserDemoGraphs", fields: [ownerId], references: [id])
+  progress String 
+  ownerId String 
+}
 model NotificationPreference {
   id          String  @id @default(uuid())
   notifyCall  Boolean @default(false)
