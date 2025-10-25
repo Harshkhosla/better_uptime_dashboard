@@ -39,9 +39,12 @@ router.post("/create", async (req, res) => {
         createdAt: new Date(Date.now()),
       },
     });
+
+  const token = jwt.sign({ id: UserCreatedata.id }, JWT_SECRET);
+
     res.send({
       message: "User Created for you specally happy to have you!",
-      user: { id: UserCreatedata.id, email: UserCreatedata.email },
+      user: { id: UserCreatedata.id, email: UserCreatedata.email, token },
     });
   } catch (e) {
     res.status(500).json({

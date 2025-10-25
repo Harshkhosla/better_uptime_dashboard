@@ -18,10 +18,10 @@ function Signup() {
     dispatch(
       setCredentials({
         user: { email: email },
-        token: result?.token || "",
+        token: result?.user?.token || "",
       }),
     );
-    console.log(result);
+    console.log(result,'sdvkjsdvkvdjvn');
     navigate("/");
   };
 

@@ -1,15 +1,19 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Dumbbell, CheckCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Eye, EyeOff, Dumbbell, CheckCircle, AlertCircle } from 'lucide-react';
+import { useLoginMutation } from '../redux/services/api';
+import { setCredentials } from '../redux/slices/authSlice';
 
 export default function LoginPage() {
+    const dispatch = useDispatch()
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   });
-
+const [login , {isLoading}]= useLoginMutation()
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -18,9 +22,16 @@ export default function LoginPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
+    const result = await login({
+        email:formData.email,
+        password:formData.password
+    })
+      dispatch(setCredentials({
+        token: result.data?.token,
+        user: result.data?.user
+      }));
     console.log('Login form submitted:', formData);
   };
 

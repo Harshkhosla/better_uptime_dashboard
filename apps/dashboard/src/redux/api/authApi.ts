@@ -7,12 +7,14 @@ export interface SignupRequest {
   email: string;
   password: string;
 }
-
-export interface SignupResponse {
+export interface  User{
   id: string;
-  email: string;
-  message: string;
   token?: string;
+}
+export interface SignupResponse {
+
+  user: User;
+  message: string;
 }
 
 export interface AuthError {

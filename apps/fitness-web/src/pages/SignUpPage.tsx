@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, Dumbbell, CheckCircle } from 'lucide-react';
+import { useSignupMutation } from '../redux/services/api';
+import { setCredentials } from '../redux/slices/authSlice';
+import { useDispatch } from 'react-redux';
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,10 +25,23 @@ export default function SignUpPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+    const dispatch = useDispatch()
+
+    const [signup] = useSignupMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+   const result = await signup({
+        email: formData.email,
+        password: formData.password,
+        name: `${formData.firstName} ${formData.lastName}`
+      }).unwrap();
+
+       dispatch(setCredentials({
+              token: result.token
+            }));
     // Handle signup logic here
-    console.log('Signup form submitted:', formData);
+    console.log('Signup form submitted:', result);
   };
 
   return (

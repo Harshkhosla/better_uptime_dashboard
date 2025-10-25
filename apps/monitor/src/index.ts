@@ -28,13 +28,33 @@ async function processBulkStream(
             id: true,
           },
         });
+
+        // Check if the website exists before creating WebsiteStatus
+        const website = await Prismaclient.website.findFirst({
+          where: {
+            id: message.message.id,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        if (!website) {
+          console.log(`⚠️ Website with id ${message.message.id} not found, skipping...`);
+          continue;
+        }
+
+        if (!region) {
+          console.log(`⚠️ Region with name ${message.message.origin} not found, skipping...`);
+          continue;
+        }
+
         let duration = Number.isFinite(Number(message.message.duration))
           ? message.message.duration
           : 0;
         const created = await Prismaclient.websiteStatus.create({
-          // @ts-ignore
           data: {
-            regionId: region?.id,
+            regionId: region.id,
             websiteId: message.message.id,
             responseTime: Number(duration),
             statusCheck: "Up",
@@ -111,26 +131,47 @@ async function processErrorStream(
             id: true,
           },
         });
+
+        // Check if the website exists before updating/creating records
+        const website = await Prismaclient.website.findFirst({
+          where: {
+            id: message?.message?.id,
+          },
+          select: {
+            id: true,
+            url: true,
+            ownerId: true,
+          },
+        });
+
+        if (!website) {
+          console.log(`⚠️ Website with id ${message?.message?.id} not found, skipping...`);
+          continue;
+        }
+
+        if (!region) {
+          console.log(`⚠️ Region with name ${message.message.origin} not found, skipping...`);
+          continue;
+        }
+
         let duration = Number.isFinite(Number(message.message.duration))
           ? message.message.duration
           : 0;
 
-         
-       const websiteadata =  await Prismaclient.website.update({
+        const websiteadata = await Prismaclient.website.update({
           where: {
             id: message?.message?.id,
           },
           data: {
             uptime: new Date(),
             incident: { increment: 1 },
-            alert:"ALERT"
+            alert: "ALERT"
           },
         });
         // await triggerAction (websiteadata,websiteadata.url)
         const created = await Prismaclient.websiteStatus.create({
-          // @ts-ignore
           data: {
-            regionId: region?.id,
+            regionId: region.id,
             websiteId: message.message.id,
             responseTime: Number(duration),
             statusCheck: "DOWN",
