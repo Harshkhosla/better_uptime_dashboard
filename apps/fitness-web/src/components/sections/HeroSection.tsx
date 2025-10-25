@@ -1,4 +1,4 @@
-import { Sparkles, CheckCircle, ArrowRight, Users } from 'lucide-react';
+import { Sparkles, CheckCircle, ArrowRight, Users } from "lucide-react";
 
 export default function HeroSection() {
   return (
@@ -10,7 +10,9 @@ export default function HeroSection() {
           <div className="space-y-8">
             <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 px-5 py-2.5 rounded-full border border-blue-200/50 shadow-sm">
               <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-semibold">AI-Powered Fitness Plans</span>
+              <span className="text-sm font-semibold">
+                AI-Powered Fitness Plans
+              </span>
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 leading-[1.1]">
@@ -22,8 +24,9 @@ export default function HeroSection() {
             </h1>
 
             <p className="text-xl text-slate-600 leading-relaxed">
-              Get personalized workout plans created by world-class coaches and refined by cutting-edge AI.
-              Every plan is reviewed and customizable by expert trainers to ensure your success.
+              Get personalized workout plans created by world-class coaches and
+              refined by cutting-edge AI. Every plan is reviewed and
+              customizable by expert trainers to ensure your success.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -38,18 +41,30 @@ export default function HeroSection() {
 
             <div className="flex items-center space-x-8 pt-6">
               <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">50K+</div>
-                <div className="text-sm text-slate-600 font-medium mt-1">Active Members</div>
+                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  50K+
+                </div>
+                <div className="text-sm text-slate-600 font-medium mt-1">
+                  Active Members
+                </div>
               </div>
               <div className="w-px h-14 bg-gradient-to-b from-blue-300 to-purple-300"></div>
               <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">200+</div>
-                <div className="text-sm text-slate-600 font-medium mt-1">Expert Coaches</div>
+                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  200+
+                </div>
+                <div className="text-sm text-slate-600 font-medium mt-1">
+                  Expert Coaches
+                </div>
               </div>
               <div className="w-px h-14 bg-gradient-to-b from-blue-300 to-purple-300"></div>
               <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">98%</div>
-                <div className="text-sm text-slate-600 font-medium mt-1">Success Rate</div>
+                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  98%
+                </div>
+                <div className="text-sm text-slate-600 font-medium mt-1">
+                  Success Rate
+                </div>
               </div>
             </div>
           </div>
@@ -66,8 +81,13 @@ export default function HeroSection() {
                     <Sparkles className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-slate-900 mb-1.5 text-lg">AI-Generated Plans</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed">Smart algorithms create personalized workouts based on your goals, fitness level, and preferences.</p>
+                    <h3 className="font-bold text-slate-900 mb-1.5 text-lg">
+                      AI-Generated Plans
+                    </h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      Smart algorithms create personalized workouts based on
+                      your goals, fitness level, and preferences.
+                    </p>
                   </div>
                 </div>
 
@@ -76,8 +96,13 @@ export default function HeroSection() {
                     <Users className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-slate-900 mb-1.5 text-lg">Coach Review</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed">Every plan is reviewed by certified trainers who can modify and optimize it for you.</p>
+                    <h3 className="font-bold text-slate-900 mb-1.5 text-lg">
+                      Coach Review
+                    </h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      Every plan is reviewed by certified trainers who can
+                      modify and optimize it for you.
+                    </p>
                   </div>
                 </div>
 
@@ -86,15 +111,23 @@ export default function HeroSection() {
                     <CheckCircle className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-slate-900 mb-1.5 text-lg">Continuous Adaptation</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed">Your plan evolves with your progress, ensuring optimal results every step of the way.</p>
+                    <h3 className="font-bold text-slate-900 mb-1.5 text-lg">
+                      Continuous Adaptation
+                    </h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      Your plan evolves with your progress, ensuring optimal
+                      results every step of the way.
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="absolute -z-10 top-10 right-10 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
-            <div className="absolute -z-10 bottom-10 left-10 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <div
+              className="absolute -z-10 bottom-10 left-10 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"
+              style={{ animationDelay: "1s" }}
+            ></div>
           </div>
         </div>
       </div>

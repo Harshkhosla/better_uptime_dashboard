@@ -1,38 +1,41 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { Eye, EyeOff, Dumbbell, CheckCircle, AlertCircle } from 'lucide-react';
-import { useLoginMutation } from '../redux/services/api';
-import { setCredentials } from '../redux/slices/authSlice';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Eye, EyeOff, Dumbbell, CheckCircle } from "lucide-react";
+import { useLoginMutation } from "../redux/services/api";
+import { setCredentials } from "../redux/slices/authSlice";
 
 export default function LoginPage() {
-    const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    rememberMe: false
+    email: "",
+    password: "",
+    rememberMe: false,
   });
-const [login , {isLoading}]= useLoginMutation()
+  const [login] = useLoginMutation();
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await login({
-        email:formData.email,
-        password:formData.password
-    })
-      dispatch(setCredentials({
+      email: formData.email,
+      password: formData.password,
+    });
+    dispatch(
+      setCredentials({
         token: result.data?.token,
-        user: result.data?.user
-      }));
-    console.log('Login form submitted:', formData);
+      }),
+    );
+    navigate("/home");
+    console.log("Login form submitted:", formData);
   };
 
   return (
@@ -49,15 +52,22 @@ const [login , {isLoading}]= useLoginMutation()
                 FitFlow
               </span>
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h1>
-            <p className="text-slate-600">Sign in to continue your fitness journey</p>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              Welcome Back
+            </h1>
+            <p className="text-slate-600">
+              Sign in to continue your fitness journey
+            </p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-slate-700 mb-2"
+              >
                 Email Address
               </label>
               <input
@@ -74,12 +84,15 @@ const [login , {isLoading}]= useLoginMutation()
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-semibold text-slate-700 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   value={formData.password}
@@ -93,7 +106,11 @@ const [login , {isLoading}]= useLoginMutation()
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -111,11 +128,16 @@ const [login , {isLoading}]= useLoginMutation()
                     className="sr-only"
                   />
                   <div
-                    onClick={() => setFormData(prev => ({ ...prev, rememberMe: !prev.rememberMe }))}
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        rememberMe: !prev.rememberMe,
+                      }))
+                    }
                     className={`w-5 h-5 rounded border-2 cursor-pointer transition-all ${
                       formData.rememberMe
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 border-blue-600'
-                        : 'border-blue-200 bg-white'
+                        ? "bg-gradient-to-r from-blue-600 to-purple-600 border-blue-600"
+                        : "border-blue-200 bg-white"
                     }`}
                   >
                     {formData.rememberMe && (
@@ -123,12 +145,15 @@ const [login , {isLoading}]= useLoginMutation()
                     )}
                   </div>
                 </div>
-                <label htmlFor="rememberMe" className="text-sm text-slate-600 cursor-pointer">
+                <label
+                  htmlFor="rememberMe"
+                  className="text-sm text-slate-600 cursor-pointer"
+                >
                   Remember me
                 </label>
               </div>
-              <Link 
-                to="/forgot-password" 
+              <Link
+                to="/forgot-password"
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium"
               >
                 Forgot password?
@@ -151,7 +176,9 @@ const [login , {isLoading}]= useLoginMutation()
                 <div className="w-full border-t border-blue-200"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-slate-500 font-medium">Or continue with</span>
+                <span className="px-4 bg-white text-slate-500 font-medium">
+                  Or continue with
+                </span>
               </div>
             </div>
           </div>
@@ -182,13 +209,17 @@ const [login , {isLoading}]= useLoginMutation()
               </svg>
               Continue with Google
             </button>
-            
+
             <button
               type="button"
               className="w-full flex items-center justify-center px-4 py-3 border-2 border-blue-200 rounded-xl hover:border-blue-300 hover:bg-blue-50/50 transition-all font-medium text-slate-700"
             >
-              <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              <svg
+                className="w-5 h-5 mr-3"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
               Continue with Facebook
             </button>
@@ -197,8 +228,11 @@ const [login , {isLoading}]= useLoginMutation()
           {/* Footer */}
           <div className="mt-8 text-center">
             <p className="text-slate-600">
-              Don't have an account?{' '}
-              <Link to="/signup" className="text-blue-600 hover:text-blue-700 font-semibold">
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="text-blue-600 hover:text-blue-700 font-semibold"
+              >
                 Sign Up
               </Link>
             </p>

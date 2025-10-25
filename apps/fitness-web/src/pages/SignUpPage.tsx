@@ -1,47 +1,49 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Dumbbell, CheckCircle } from 'lucide-react';
-import { useSignupMutation } from '../redux/services/api';
-import { setCredentials } from '../redux/slices/authSlice';
-import { useDispatch } from 'react-redux';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Eye, EyeOff, Dumbbell, CheckCircle } from "lucide-react";
+import { useSignupMutation } from "../redux/services/api";
+import { setCredentials } from "../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    agreeToTerms: false
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    agreeToTerms: false,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-    const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-    const [signup] = useSignupMutation();
+  const [signup] = useSignupMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-   const result = await signup({
-        email: formData.email,
-        password: formData.password,
-        name: `${formData.firstName} ${formData.lastName}`
-      }).unwrap();
+    const result = await signup({
+      email: formData.email,
+      password: formData.password,
+      name: `${formData.firstName} ${formData.lastName}`,
+    }).unwrap();
 
-       dispatch(setCredentials({
-              token: result.token
-            }));
+    dispatch(
+      setCredentials({
+        token: result.token,
+      }),
+    );
     // Handle signup logic here
-    console.log('Signup form submitted:', result);
+    console.log("Signup form submitted:", result);
   };
 
   return (
@@ -58,7 +60,9 @@ export default function SignUpPage() {
                 FitFlow
               </span>
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Create Your Account</h1>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              Create Your Account
+            </h1>
             <p className="text-slate-600">Start your fitness journey today</p>
           </div>
 
@@ -67,7 +71,10 @@ export default function SignUpPage() {
             {/* Name Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-semibold text-slate-700 mb-2">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-semibold text-slate-700 mb-2"
+                >
                   First Name
                 </label>
                 <input
@@ -82,7 +89,10 @@ export default function SignUpPage() {
                 />
               </div>
               <div>
-                <label htmlFor="lastName" className="block text-sm font-semibold text-slate-700 mb-2">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-semibold text-slate-700 mb-2"
+                >
                   Last Name
                 </label>
                 <input
@@ -100,7 +110,10 @@ export default function SignUpPage() {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-slate-700 mb-2"
+              >
                 Email Address
               </label>
               <input
@@ -117,12 +130,15 @@ export default function SignUpPage() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-semibold text-slate-700 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   value={formData.password}
@@ -136,19 +152,26 @@ export default function SignUpPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-semibold text-slate-700 mb-2"
+              >
                 Confirm Password
               </label>
               <div className="relative">
                 <input
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}
@@ -162,7 +185,11 @@ export default function SignUpPage() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -180,11 +207,16 @@ export default function SignUpPage() {
                   required
                 />
                 <div
-                  onClick={() => setFormData(prev => ({ ...prev, agreeToTerms: !prev.agreeToTerms }))}
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      agreeToTerms: !prev.agreeToTerms,
+                    }))
+                  }
                   className={`w-5 h-5 rounded border-2 cursor-pointer transition-all ${
                     formData.agreeToTerms
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 border-blue-600'
-                      : 'border-blue-200 bg-white'
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 border-blue-600"
+                      : "border-blue-200 bg-white"
                   }`}
                 >
                   {formData.agreeToTerms && (
@@ -192,13 +224,22 @@ export default function SignUpPage() {
                   )}
                 </div>
               </div>
-              <label htmlFor="agreeToTerms" className="text-sm text-slate-600 leading-relaxed">
-                I agree to the{' '}
-                <Link to="/terms" className="text-blue-600 hover:text-blue-700 font-medium">
+              <label
+                htmlFor="agreeToTerms"
+                className="text-sm text-slate-600 leading-relaxed"
+              >
+                I agree to the{" "}
+                <Link
+                  to="/terms"
+                  className="text-blue-600 hover:text-blue-700 font-medium"
+                >
                   Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link to="/privacy" className="text-blue-600 hover:text-blue-700 font-medium">
+                </Link>{" "}
+                and{" "}
+                <Link
+                  to="/privacy"
+                  className="text-blue-600 hover:text-blue-700 font-medium"
+                >
                   Privacy Policy
                 </Link>
               </label>
@@ -217,8 +258,11 @@ export default function SignUpPage() {
           {/* Footer */}
           <div className="mt-8 text-center">
             <p className="text-slate-600">
-              Already have an account?{' '}
-              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-blue-600 hover:text-blue-700 font-semibold"
+              >
                 Sign In
               </Link>
             </p>
@@ -227,16 +271,21 @@ export default function SignUpPage() {
           {/* Benefits */}
           <div className="mt-8 pt-6 border-t border-blue-100">
             <div className="text-center mb-4">
-              <span className="text-sm font-semibold text-slate-600">What you'll get:</span>
+              <span className="text-sm font-semibold text-slate-600">
+                What you'll get:
+              </span>
             </div>
             <div className="space-y-2">
               {[
-                'Personalized AI workout plans',
-                'Expert coach review & optimization',
-                'Progress tracking & analytics',
-                'Nutrition guidance & meal plans'
+                "Personalized AI workout plans",
+                "Expert coach review & optimization",
+                "Progress tracking & analytics",
+                "Nutrition guidance & meal plans",
               ].map((benefit, index) => (
-                <div key={index} className="flex items-center space-x-3 text-sm text-slate-600">
+                <div
+                  key={index}
+                  className="flex items-center space-x-3 text-sm text-slate-600"
+                >
                   <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-1 rounded-full">
                     <CheckCircle className="w-3 h-3 text-white" />
                   </div>

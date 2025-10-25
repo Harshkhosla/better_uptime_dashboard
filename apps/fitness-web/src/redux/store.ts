@@ -1,13 +1,13 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { setupListeners } from '@reduxjs/toolkit/query';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // localStorage
-import { api } from './services/api';
-import authReducer from './slices/authSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // localStorage
+import { api } from "./services/api";
+import authReducer from "./slices/authSlice";
 
 const authPersistConfig = {
-  key: 'auth',
-  storage
+  key: "auth",
+  storage,
 };
 
 const persistedAuth = persistReducer(authPersistConfig, authReducer);

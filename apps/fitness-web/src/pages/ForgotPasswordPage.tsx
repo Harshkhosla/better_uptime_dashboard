@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Dumbbell, ArrowLeft, CheckCircle } from 'lucide-react';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Dumbbell, ArrowLeft, CheckCircle } from "lucide-react";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle forgot password logic here
-    console.log('Forgot password for:', email);
+    console.log("Forgot password for:", email);
     setIsSubmitted(true);
   };
 
@@ -25,7 +25,9 @@ export default function ForgotPasswordPage() {
                   <CheckCircle className="w-8 h-8 text-white" />
                 </div>
               </div>
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">Check Your Email</h1>
+              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+                Check Your Email
+              </h1>
               <p className="text-slate-600 leading-relaxed">
                 We've sent password reset instructions to <br />
                 <span className="font-semibold text-slate-700">{email}</span>
@@ -34,18 +36,26 @@ export default function ForgotPasswordPage() {
 
             {/* Instructions */}
             <div className="bg-blue-50/50 rounded-2xl p-6 mb-8">
-              <h3 className="font-semibold text-slate-900 mb-3">What's next?</h3>
+              <h3 className="font-semibold text-slate-900 mb-3">
+                What's next?
+              </h3>
               <ol className="space-y-2 text-sm text-slate-600">
                 <li className="flex items-start space-x-3">
-                  <span className="bg-blue-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center mt-0.5">1</span>
+                  <span className="bg-blue-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center mt-0.5">
+                    1
+                  </span>
                   <span>Check your email inbox (and spam folder)</span>
                 </li>
                 <li className="flex items-start space-x-3">
-                  <span className="bg-blue-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center mt-0.5">2</span>
+                  <span className="bg-blue-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center mt-0.5">
+                    2
+                  </span>
                   <span>Click the password reset link</span>
                 </li>
                 <li className="flex items-start space-x-3">
-                  <span className="bg-blue-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center mt-0.5">3</span>
+                  <span className="bg-blue-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center mt-0.5">
+                    3
+                  </span>
                   <span>Create your new password</span>
                 </li>
               </ol>
@@ -59,7 +69,7 @@ export default function ForgotPasswordPage() {
               >
                 Send Again
               </button>
-              
+
               <Link
                 to="/login"
                 className="w-full bg-white border-2 border-blue-200 text-blue-600 py-3 rounded-xl hover:border-blue-300 hover:bg-blue-50/50 transition-all font-semibold text-center block"
@@ -71,7 +81,7 @@ export default function ForgotPasswordPage() {
             {/* Help */}
             <div className="mt-6 text-center">
               <p className="text-sm text-slate-500">
-                Didn't receive the email? Check your spam folder or{' '}
+                Didn't receive the email? Check your spam folder or{" "}
                 <button
                   onClick={() => setIsSubmitted(false)}
                   className="text-blue-600 hover:text-blue-700 font-medium"
@@ -92,7 +102,7 @@ export default function ForgotPasswordPage() {
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-blue-100">
           {/* Back Link */}
           <div className="mb-6">
-            <Link 
+            <Link
               to="/login"
               className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium"
             >
@@ -111,16 +121,22 @@ export default function ForgotPasswordPage() {
                 FitFlow
               </span>
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Reset Your Password</h1>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              Reset Your Password
+            </h1>
             <p className="text-slate-600">
-              Enter your email address and we'll send you a link to reset your password
+              Enter your email address and we'll send you a link to reset your
+              password
             </p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-slate-700 mb-2"
+              >
                 Email Address
               </label>
               <input
@@ -145,8 +161,11 @@ export default function ForgotPasswordPage() {
           {/* Footer */}
           <div className="mt-8 text-center">
             <p className="text-slate-600">
-              Remember your password?{' '}
-              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+              Remember your password?{" "}
+              <Link
+                to="/login"
+                className="text-blue-600 hover:text-blue-700 font-semibold"
+              >
                 Sign In
               </Link>
             </p>
@@ -155,10 +174,13 @@ export default function ForgotPasswordPage() {
           {/* Security Note */}
           <div className="mt-6 pt-6 border-t border-blue-100">
             <div className="bg-blue-50/50 rounded-xl p-4">
-              <h4 className="font-semibold text-slate-900 text-sm mb-2">Security Note</h4>
+              <h4 className="font-semibold text-slate-900 text-sm mb-2">
+                Security Note
+              </h4>
               <p className="text-xs text-slate-600 leading-relaxed">
-                For your security, password reset links expire after 24 hours. 
-                If you don't see the email, check your spam folder or contact support.
+                For your security, password reset links expire after 24 hours.
+                If you don't see the email, check your spam folder or contact
+                support.
               </p>
             </div>
           </div>

@@ -40,7 +40,7 @@ router.post("/create", async (req, res) => {
       },
     });
 
-  const token = jwt.sign({ id: UserCreatedata.id }, JWT_SECRET);
+    const token = jwt.sign({ id: UserCreatedata.id }, JWT_SECRET);
 
     res.send({
       message: "User Created for you specally happy to have you!",

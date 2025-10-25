@@ -9,8 +9,8 @@ import { setWebsites } from "../../redux/slice/webSlice";
 
 export const Monitors = () => {
   const { websites: monitors } = useAppSelector((state) => state.website);
-  console.log(monitors,'monitorsmonitors');
-  
+  console.log(monitors, "monitorsmonitors");
+
   const { data: websitesData, isLoading, error } = useGetwebsitesQuery();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();

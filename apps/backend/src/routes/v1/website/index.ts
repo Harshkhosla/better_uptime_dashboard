@@ -3,31 +3,31 @@ import { Router } from "express";
 import { authMiddleware } from "../../../middleware/middleware";
 
 const router: Router = Router();
-  router.post("/updateUserDetails",authMiddleware,async(req,res)=>{
-    if (!req.body) {
+router.post("/updateUserDetails", authMiddleware, async (req, res) => {
+  if (!req.body) {
     res.status(403).json({
       message: "YOU HAVE NOT PROVIDED US WITH THE DATA",
     });
     return;
   }
-const { weight, bmi, height, preferences ,age } = req.body.formData;
+  const { weight, bmi, height, preferences, age } = req.body.formData;
   const userdetailsupdating = await Prismaclient.userDetails.create({
-    data:{
-      weight:weight,
-      bmi:bmi,
-      height:height,
-      preferences:preferences,
-      age:age,
+    data: {
+      weight: weight,
+      bmi: bmi,
+      height: height,
+      preferences: preferences,
+      age: age,
       // @ts-ignore
-      ownerId:req?.UserID,
-    }
-  })
+      ownerId: req?.UserID,
+    },
+  });
 
   res.status(200).json({
-    message:userdetailsupdating
-  })
-  return 
-  })
+    message: userdetailsupdating,
+  });
+  return;
+});
 router.post("/website", authMiddleware, async (req, res) => {
   if (!req.body) {
     res.status(403).json({

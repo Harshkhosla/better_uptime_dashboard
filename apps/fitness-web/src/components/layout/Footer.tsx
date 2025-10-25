@@ -1,4 +1,4 @@
-import { Dumbbell } from 'lucide-react';
+import { Dumbbell } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -14,7 +14,8 @@ export default function Footer() {
             </span>
           </div>
           <div className="text-sm text-center md:text-left text-slate-400">
-            © 2025 FitFlow. All rights reserved. Built with AI and human expertise.
+            © 2025 FitFlow. All rights reserved. Built with AI and human
+            expertise.
           </div>
         </div>
       </div>

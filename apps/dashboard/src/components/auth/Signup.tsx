@@ -21,7 +21,7 @@ function Signup() {
         token: result?.user?.token || "",
       }),
     );
-    console.log(result,'sdvkjsdvkvdjvn');
+    console.log(result, "sdvkjsdvkvdjvn");
     navigate("/");
   };
 

@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Dumbbell, Menu, X } from 'lucide-react';
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Dumbbell, Menu, X } from "lucide-react";
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,9 +29,9 @@ export default function Navigation() {
             <Link
               to="/features"
               className={`transition-colors font-medium ${
-                isActive('/features') 
-                  ? 'text-blue-600' 
-                  : 'text-slate-700 hover:text-blue-600'
+                isActive("/features")
+                  ? "text-blue-600"
+                  : "text-slate-700 hover:text-blue-600"
               }`}
             >
               Features
@@ -39,9 +39,9 @@ export default function Navigation() {
             <Link
               to="/how-it-works"
               className={`transition-colors font-medium ${
-                isActive('/how-it-works') 
-                  ? 'text-purple-600' 
-                  : 'text-slate-700 hover:text-purple-600'
+                isActive("/how-it-works")
+                  ? "text-purple-600"
+                  : "text-slate-700 hover:text-purple-600"
               }`}
             >
               How It Works
@@ -49,9 +49,9 @@ export default function Navigation() {
             <Link
               to="/coaches"
               className={`transition-colors font-medium ${
-                isActive('/coaches') 
-                  ? 'text-blue-600' 
-                  : 'text-slate-700 hover:text-blue-600'
+                isActive("/coaches")
+                  ? "text-blue-600"
+                  : "text-slate-700 hover:text-blue-600"
               }`}
             >
               Coaches
@@ -74,7 +74,11 @@ export default function Navigation() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 rounded-lg hover:bg-blue-50 transition-colors"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
       </div>
@@ -86,9 +90,9 @@ export default function Navigation() {
               to="/features"
               onClick={handleMobileMenuClose}
               className={`block py-2 transition-colors font-medium ${
-                isActive('/features') 
-                  ? 'text-blue-600' 
-                  : 'text-slate-700 hover:text-blue-600'
+                isActive("/features")
+                  ? "text-blue-600"
+                  : "text-slate-700 hover:text-blue-600"
               }`}
             >
               Features
@@ -97,9 +101,9 @@ export default function Navigation() {
               to="/how-it-works"
               onClick={handleMobileMenuClose}
               className={`block py-2 transition-colors font-medium ${
-                isActive('/how-it-works') 
-                  ? 'text-purple-600' 
-                  : 'text-slate-700 hover:text-purple-600'
+                isActive("/how-it-works")
+                  ? "text-purple-600"
+                  : "text-slate-700 hover:text-purple-600"
               }`}
             >
               How It Works
@@ -108,9 +112,9 @@ export default function Navigation() {
               to="/coaches"
               onClick={handleMobileMenuClose}
               className={`block py-2 transition-colors font-medium ${
-                isActive('/coaches') 
-                  ? 'text-blue-600' 
-                  : 'text-slate-700 hover:text-blue-600'
+                isActive("/coaches")
+                  ? "text-blue-600"
+                  : "text-slate-700 hover:text-blue-600"
               }`}
             >
               Coaches

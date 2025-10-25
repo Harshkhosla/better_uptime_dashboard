@@ -40,12 +40,16 @@ async function processBulkStream(
         });
 
         if (!website) {
-          console.log(`⚠️ Website with id ${message.message.id} not found, skipping...`);
+          console.log(
+            `⚠️ Website with id ${message.message.id} not found, skipping...`,
+          );
           continue;
         }
 
         if (!region) {
-          console.log(`⚠️ Region with name ${message.message.origin} not found, skipping...`);
+          console.log(
+            `⚠️ Region with name ${message.message.origin} not found, skipping...`,
+          );
           continue;
         }
 
@@ -77,25 +81,24 @@ async function processBulkStream(
   return lastBulkId;
 }
 
+async function triggerAction(websitedata: any, url: string) {
+  console.log(websitedata.ownerId, "cdkjnkjdvnskvndsjnvnsskdndskjvnsdvkndsv");
 
-async function triggerAction(websitedata:any,url:string){
-    console.log(websitedata.ownerId,"cdkjnkjdvnskvndsjnvnsskdndskjvnsdvkndsv")
+  const userdata = await Prismaclient.user.findFirst({
+    where: {
+      id: websitedata.ownerId,
+    },
+  });
 
-   const userdata = await Prismaclient.user.findFirst({
-    where:{
-      id:websitedata.ownerId
-    }
-   })
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "Harshkhosla9945@gmail.com",
+      pass: "smos vryu mccy rhqp",
+    },
+  });
 
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'Harshkhosla9945@gmail.com',
-            pass: 'smos vryu mccy rhqp',
-        },
-    });
-
-    const mailOptions = {
+  const mailOptions = {
     from: `"Uptime Monitor" <Harshkhosla9945@gmail.com>`,
     to: userdata?.email,
     subject: `🚨 Alert: Your website is DOWN`,
@@ -105,8 +108,8 @@ async function triggerAction(websitedata:any,url:string){
       <p>Please investigate immediately.</p>
     `,
   };
-   console.log(userdata,"cdkjnkjdvnskvndsjnvnsskdndskjvnsdvkndsv")
-   await transporter.sendMail(mailOptions);
+  console.log(userdata, "cdkjnkjdvnskvndsjnvnsskdndskjvnsdvkndsv");
+  await transporter.sendMail(mailOptions);
 }
 
 async function processErrorStream(
@@ -145,12 +148,16 @@ async function processErrorStream(
         });
 
         if (!website) {
-          console.log(`⚠️ Website with id ${message?.message?.id} not found, skipping...`);
+          console.log(
+            `⚠️ Website with id ${message?.message?.id} not found, skipping...`,
+          );
           continue;
         }
 
         if (!region) {
-          console.log(`⚠️ Region with name ${message.message.origin} not found, skipping...`);
+          console.log(
+            `⚠️ Region with name ${message.message.origin} not found, skipping...`,
+          );
           continue;
         }
 
@@ -165,7 +172,7 @@ async function processErrorStream(
           data: {
             uptime: new Date(),
             incident: { increment: 1 },
-            alert: "ALERT"
+            alert: "ALERT",
           },
         });
         // await triggerAction (websiteadata,websiteadata.url)

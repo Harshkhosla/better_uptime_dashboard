@@ -9,12 +9,15 @@ export default function CTASection() {
           Ready to Transform Your Life?
         </h2>
         <p className="text-xl text-blue-50 mb-10 leading-relaxed">
-          Join 50,000+ members who trust FitFlow to help them achieve their fitness goals with AI-powered plans and expert coaching.
+          Join 50,000+ members who trust FitFlow to help them achieve their
+          fitness goals with AI-powered plans and expert coaching.
         </p>
         <button className="bg-white text-blue-600 px-12 py-5 rounded-full hover:bg-blue-50 transition-all transform hover:scale-105 font-bold text-lg shadow-2xl hover:shadow-white/30">
           Start Your Free Trial
         </button>
-        <p className="text-blue-100 mt-6 text-sm font-medium">No credit card required • Cancel anytime</p>
+        <p className="text-blue-100 mt-6 text-sm font-medium">
+          No credit card required • Cancel anytime
+        </p>
       </div>
     </section>
   );
