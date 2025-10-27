@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../store";
+import type { Meal } from "../../components/types/health";
 
 export const api = createApi({
   reducerPath: "api",
@@ -14,7 +15,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Websites", "User"],
+  tagTypes: ["Websites", "User", "llm"],
   endpoints: (builder) => ({
     signup: builder.mutation<
       { token: string; email: string },
@@ -74,6 +75,26 @@ export const api = createApi({
         method: "GET",
       }),
       invalidatesTags: ["Websites"],
+    }),  
+      getUsermeals: builder.mutation<
+      {  meals: Meal },
+      {  userDetails :UserDetails }
+    >({
+      query: (credentials) => ({
+        url: "/llm/getllm",
+        method: "POST",
+        body: credentials,
+      }),
+      invalidatesTags: ["User"],
+    }),
+     getlatestUsermeals: builder.mutation<
+      {  success: boolean; mealPlan: any },{}
+    >({
+      query: () => ({
+        url: "/llm/active-meal-plan",
+        method: "GET"
+      }),
+      invalidatesTags: ["User"],
     }),
   }),
 });
@@ -83,6 +104,8 @@ export const {
   useLoginMutation,
   useSaveprefrenceMutation,
   useGetuserdetailsMutation,
+  useGetUsermealsMutation,
+  useGetlatestUsermealsMutation
 } = api;
 
 export type User = { id: string; email: string; name?: string };

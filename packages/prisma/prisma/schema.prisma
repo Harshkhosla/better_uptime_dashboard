@@ -26,8 +26,70 @@ model User {
   userDetails UserDetails?  @relation("UserDetails")
   userDetailsFilled Boolean?
   userDemoGraphs UserDemoGraph[] @relation("UserDemoGraphs")
+  mealPlans         MealPlan[]
+  chatHistory       ChatHistory[]
 }
 
+
+model MealPlan {
+  id             String      @id @default(uuid())
+  userId         String
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generatedAt    DateTime    @default(now())
+  numberOfDays   Int         @default(7)
+  isActive       Boolean     @default(true)
+  userInput      Json        // Store the input parameters used for generation
+  mealStructure  Json        // Store the meal structure configuration
+  days           MealDay[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  
+  @@index([userId, isActive])
+}
+
+model MealDay {
+  id         String   @id @default(uuid())
+  mealPlanId String
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  date       DateTime
+  meals      Meal[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@index([mealPlanId, date])
+}
+
+model Meal {
+  id              String      @id @default(uuid())
+  mealDayId       String
+  mealDay         MealDay     @relation(fields: [mealDayId], references: [id], onDelete: Cascade)
+  externalId      String      // The ID from LLM response (e.g., "1", "2", etc.)
+  name            String
+  type            String      // breakfast, snack, lunch, dinner
+  calories        Int
+  protein         Float
+  carbs           Float
+  fats            Float
+  time            String
+  isCompleted     Boolean     @default(false)
+  completedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@index([mealDayId, type])
+}
+
+model ChatHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   // "user" or "assistant"
+  content   Json     // Store the message content
+  metadata  Json?    // Store additional context (userDetails, mealPlan generated, etc.)
+  createdAt DateTime @default(now())
+  
+  @@index([userId, createdAt])
+}
 model UserDetails {
   id    String @id @default(uuid())
   owner       User     @relation("UserDetails", fields: [ownerId], references: [id])

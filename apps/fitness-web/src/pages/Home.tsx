@@ -15,8 +15,10 @@ import WeightTracker from "../components/sections/WeightTracker";
 import UserDetailsForm, {
   type UserFormData,
 } from "../components/sections/UserDetailsForm";
-import { userStats, mealPlan, weightHistory } from "../components/data/dummy";
+import { userStats, weightHistory } from "../components/data/dummy";
+import type { DayMeals } from "../components/types/health";
 import {
+  useGetlatestUsermealsMutation,
   useGetuserdetailsMutation,
   useSaveprefrenceMutation,
 } from "../redux/services/api";
@@ -26,22 +28,25 @@ import type { RootState } from "../redux/store";
 
 function Home() {
   const dispatch = useDispatch();
-  const token = useSelector((state: RootState) => state.auth.token);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const [savePrefrence] = useSaveprefrenceMutation();
+  const [getUserDetails] = useGetuserdetailsMutation();
+  const [getlatestUsermeals] = useGetlatestUsermealsMutation();
+  const userData = useSelector((state: RootState) => state.auth.userDetails);
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [completedMeals, setCompletedMeals] = useState<Set<string>>(new Set());
   const [showUserForm, setShowUserForm] = useState(false);
+  const [mealplandata, setmealplandata] = useState<DayMeals[]>([]);
   const [userDetails, setUserDetails] = useState<UserFormData | null>(null);
-  const selectedDay = mealPlan[selectedDayIndex];
+  const selectedDay = mealplandata?.[selectedDayIndex];
 
-  const completedMealsToday = selectedDay.meals.filter((meal) =>
+  const completedMealsToday = selectedDay?.meals?.filter((meal) =>
     completedMeals.has(meal.id),
   );
-  const totalCaloriesToday = completedMealsToday.reduce(
+  const totalCaloriesToday = completedMealsToday?.reduce(
     (sum, meal) => sum + meal.calories,
     0,
   );
-  const totalProteinToday = completedMealsToday.reduce(
+  const totalProteinToday = completedMealsToday?.reduce(
     (sum, meal) => sum + meal.protein,
     0,
   );
@@ -60,7 +65,7 @@ function Home() {
   };
 
   const goToNextDay = () => {
-    setSelectedDayIndex((prev) => Math.min(mealPlan.length - 1, prev + 1));
+    setSelectedDayIndex((prev) => Math.min(mealplandata?.length - 1, prev + 1));
   };
 
   const toggleMealComplete = (mealId: string) => {
@@ -75,8 +80,7 @@ function Home() {
     });
   };
 
-  const [savePrefrence] = useSaveprefrenceMutation();
-  const [getUserDetails] = useGetuserdetailsMutation();
+
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -111,8 +115,40 @@ function Home() {
       }
     };
 
+  const fetchUsermeals = async () => {
+      if (!userData) {
+        console.log("No user data available, skipping meal fetch");
+        return;
+      }
+      try {
+        const response = await getlatestUsermeals({}).unwrap();
+        if (response?.mealPlan?.days) {
+          const transformedData: DayMeals[] = response.mealPlan.days.map((day: any) => ({
+            date: new Date(day.date).toISOString().split('T')[0],
+            meals: day.meals.map((meal: any) => ({
+              id: meal.id,
+              name: meal.name,
+              type: meal.type,
+              calories: meal.calories,
+              protein: meal.protein,
+              carbs: meal.carbs,
+              fats: meal.fats,
+              time: meal.time,
+            }))
+          }));
+          console.log(transformedData)
+          setmealplandata(transformedData);
+        }
+        
+        console.log("User meals fetched:", response);
+      } catch (error) {
+        console.error("Failed to fetch user meals:", error);
+      }
+    };
+
     fetchUserDetails();
-  }, []);
+    fetchUsermeals();
+  }, []); 
 
   const handleUserDetailsSubmit = async (data: UserFormData) => {
     setUserDetails(data);
@@ -125,7 +161,7 @@ function Home() {
       console.error("Failed to save preferences:", error);
     }
   };
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-14 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -164,12 +200,12 @@ function Home() {
               </button>
               <div className="bg-gray-50 px-4 py-2 rounded-lg min-w-[140px] text-center">
                 <p className="text-sm font-semibold text-gray-900">
-                  {formatDate(selectedDay.date)}
+                  {formatDate(selectedDay?.date)}
                 </p>
               </div>
               <button
                 onClick={goToNextDay}
-                disabled={selectedDayIndex === mealPlan.length - 1}
+                disabled={selectedDayIndex === mealplandata.length - 1}
                 className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronRight className="w-5 h-5 text-gray-700" />
@@ -178,7 +214,7 @@ function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {selectedDay.meals.map((meal) => (
+            {selectedDay?.meals.map((meal) => (
               <MealCard
                 key={meal.id}
                 meal={meal}
