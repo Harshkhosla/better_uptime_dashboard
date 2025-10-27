@@ -2,6 +2,33 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../store";
 import type { Meal } from "../../components/types/health";
 
+interface MealResponse {
+  id: string;
+  name: string;
+  type: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  time: string;
+  isCompleted?: boolean;
+}
+
+interface DayResponse {
+  date: string;
+  meals: MealResponse[];
+}
+
+interface WeightEntry {
+  id: string;
+  userId: string;
+  date: string;
+  weight: number;
+  goal: number | null;
+  note: string | null;
+  createdAt: string;
+}
+
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
@@ -69,7 +96,7 @@ export const api = createApi({
           updatedAt: string;
         };
       },
-      {}
+      Record<string, never>
     >({
       query: () => ({
         url: "/website/userDetails",
@@ -89,7 +116,7 @@ export const api = createApi({
       invalidatesTags: ["User"],
     }),
      getlatestUsermeals: builder.mutation<
-      {  success: boolean; mealPlan: any },{}
+      {  success: boolean; mealPlan: { days: DayResponse[] } }, Record<string, never>
     >({
       query: () => ({
         url: "/llm/active-meal-plan",
@@ -98,7 +125,7 @@ export const api = createApi({
       invalidatesTags: ["User"],
     }),
     completeMeal: builder.mutation<
-      { success: boolean; meal: any },
+      { success: boolean; meal: MealResponse },
       { mealId: string; isCompleted: boolean }
     >({
       query: ({ mealId, isCompleted }) => ({
@@ -109,7 +136,7 @@ export const api = createApi({
       invalidatesTags: ["User"],
     }),
     addWeightEntry: builder.mutation<
-      { success: boolean; weightEntry: any },
+      { success: boolean; weightEntry: WeightEntry },
       { weight: number; date?: string; goal?: number; note?: string }
     >({
       query: (data) => ({
@@ -120,7 +147,7 @@ export const api = createApi({
       invalidatesTags: ["Weight", "User"],
     }),
     getWeightHistory: builder.query<
-      { success: boolean; weightHistory: any[]; count: number },
+      { success: boolean; weightHistory: WeightEntry[]; count: number },
       { limit?: number; startDate?: string; endDate?: string }
     >({
       query: (params) => ({
@@ -131,7 +158,21 @@ export const api = createApi({
       providesTags: ["Weight"],
     }),
     getWeightStats: builder.query<
-      { success: boolean; stats: any },
+      { 
+        success: boolean; 
+        stats: {
+          startWeight: number;
+          currentWeight: number;
+          goalWeight: number | null;
+          totalChange: number;
+          remainingToGoal: number | null;
+          progressPercentage: number | null;
+          avgWeeklyChange: number | null;
+          totalEntries: number;
+          firstEntry: string;
+          lastEntry: string;
+        } | null;
+      },
       void
     >({
       query: () => ({

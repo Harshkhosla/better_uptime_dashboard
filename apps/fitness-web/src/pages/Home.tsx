@@ -45,8 +45,14 @@ function Home() {
   const [userDetails, setUserDetails] = useState<UserFormData | null>(null);
   const selectedDay = mealplandata?.[selectedDayIndex];
 
+  interface WeightHistoryEntry {
+    date: string;
+    weight: number;
+    goal: number | null;
+  }
+
   // Transform weight history from API
-  const weightHistory = weightHistoryData?.weightHistory?.map((entry: any) => ({
+  const weightHistory = weightHistoryData?.weightHistory?.map((entry: WeightHistoryEntry) => ({
     date: new Date(entry.date).toISOString().split('T')[0],
     weight: entry.weight,
     goal: entry.goal || 70,
@@ -156,6 +162,22 @@ function Home() {
         console.error("Failed to fetch user details:", error);
       }
     };
+  interface MealResponse {
+    id: string;
+    name: string;
+    type: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+    time: string;
+    isCompleted?: boolean;
+  }
+
+  interface DayResponse {
+    date: string;
+    meals: MealResponse[];
+  }
 
   const fetchUsermeals = async () => {
       if (!userData) {
@@ -165,12 +187,12 @@ function Home() {
       try {
         const response = await getlatestUsermeals({}).unwrap();
         if (response?.mealPlan?.days) {
-          const transformedData: DayMeals[] = response.mealPlan.days.map((day: any) => ({
+          const transformedData: DayMeals[] = response.mealPlan.days.map((day: DayResponse) => ({
             date: new Date(day.date).toISOString().split('T')[0],
-            meals: day.meals.map((meal: any) => ({
+            meals: day.meals.map((meal: MealResponse) => ({
               id: meal.id,
               name: meal.name,
-              type: meal.type,
+              type: meal.type as "breakfast" | "lunch" | "dinner" | "snack",
               calories: meal.calories,
               protein: meal.protein,
               carbs: meal.carbs,
@@ -181,8 +203,8 @@ function Home() {
           setmealplandata(transformedData);
           
           const completedMealIds = new Set<string>();
-          response.mealPlan.days.forEach((day: any) => {
-            day.meals.forEach((meal: any) => {
+          response.mealPlan.days.forEach((day: DayResponse) => {
+            day.meals.forEach((meal: MealResponse) => {
               if (meal.isCompleted === true) {
                 completedMealIds.add(meal.id);
               }
@@ -197,6 +219,7 @@ function Home() {
 
     fetchUserDetails();
     fetchUsermeals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); 
 
   const handleUserDetailsSubmit = async (data: UserFormData) => {

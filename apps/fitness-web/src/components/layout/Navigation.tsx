@@ -14,7 +14,6 @@ export default function Navigation() {
 
   const token = useSelector((state: RootState) => state.auth.token);
   console.log(token, "sdv jsbkdvbdjskbkdbdsk");
-  const user = useSelector((state: RootState) => state.auth.user);
   const isActive = (path: string) => location.pathname === path;
 
   return (
