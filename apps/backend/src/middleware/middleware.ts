@@ -7,23 +7,39 @@ interface JwtPayload {
   id: string;
 }
 
+declare global {
+  namespace Express {
+    interface Request {
+      UserID?: string;
+      user?: { id: string };
+    }
+  }
+}
+
 export function authMiddleware(
   req: Request,
   res: Response,
   next: NextFunction,
-) {
-  const token = req.headers.authorization as unknown as string;
+): void {
+  const authHeader = req.headers?.authorization;
+  const token = authHeader as string;
 
   try {
-    const validtoken = token.split(" ")?.[1];
-    // @ts-ignore
-    const payload = jwt.verify(validtoken, JWT_SECRET);
-    // @ts-ignore
+    const validtoken = token?.split(" ")?.[1];
+    if (!validtoken) {
+      res.status(403).json({
+        message: "No token provided",
+      });
+      return;
+    }
+    
+    const payload = jwt.verify(validtoken, JWT_SECRET) as JwtPayload;
     req.UserID = payload.id;
     next();
   } catch (e) {
-    return res.status(403).json({
+    res.status(403).json({
       message: "You are not logged in",
     });
+    return;
   }
 }

@@ -1,11 +1,11 @@
 import { Prismaclient } from "prisma/client";
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { authMiddleware } from "../../../middleware/middleware";
 
-const router: Router = Router();
+const router = Router();
 
 // Add a new weight entry
-router.post("/add", authMiddleware, async (req, res) => {
+router.post("/add", authMiddleware, async (req: Request, res: Response) => {
   try {
     // @ts-ignore
     const userId = req.user?.id || req?.UserID;
@@ -88,7 +88,7 @@ router.post("/add", authMiddleware, async (req, res) => {
 });
 
 // Get weight history
-router.get("/history", authMiddleware, async (req, res) => {
+router.get("/history", authMiddleware, async (req: Request, res: Response) => {
   try {
     // @ts-ignore
     const userId = req.user?.id || req?.UserID;
@@ -136,7 +136,7 @@ router.get("/history", authMiddleware, async (req, res) => {
 });
 
 // Delete a weight entry
-router.delete("/:id", authMiddleware, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req: Request, res: Response) => {
   try {
     // @ts-ignore
     const userId = req.user?.id || req?.UserID;
@@ -186,7 +186,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
 });
 
 // Get weight statistics
-router.get("/stats", authMiddleware, async (req, res) => {
+router.get("/stats", authMiddleware, async (req: Request, res: Response) => {
   try {
     // @ts-ignore
     const userId = req.user?.id || req?.UserID;

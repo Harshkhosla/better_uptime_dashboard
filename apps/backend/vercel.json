@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run build",
+  "buildCommand": "cd ../../packages/prisma && npx prisma generate && cd ../../apps/backend && pnpm run build",
   "builds": [
     {
       "src": "src/index.ts",
