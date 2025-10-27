@@ -15,12 +15,15 @@ import WeightTracker from "../components/sections/WeightTracker";
 import UserDetailsForm, {
   type UserFormData,
 } from "../components/sections/UserDetailsForm";
-import { userStats, weightHistory } from "../components/data/dummy";
+import { userStats } from "../components/data/dummy";
 import type { DayMeals } from "../components/types/health";
 import {
   useGetlatestUsermealsMutation,
   useGetuserdetailsMutation,
   useSaveprefrenceMutation,
+  useCompleteMealMutation,
+  useGetWeightHistoryQuery,
+  useAddWeightEntryMutation,
 } from "../redux/services/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
@@ -31,6 +34,9 @@ function Home() {
   const [savePrefrence] = useSaveprefrenceMutation();
   const [getUserDetails] = useGetuserdetailsMutation();
   const [getlatestUsermeals] = useGetlatestUsermealsMutation();
+  const [completeMeal] = useCompleteMealMutation();
+  const [addWeightEntry] = useAddWeightEntryMutation();
+  const { data: weightHistoryData } = useGetWeightHistoryQuery({ limit: 30 });
   const userData = useSelector((state: RootState) => state.auth.userDetails);
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [completedMeals, setCompletedMeals] = useState<Set<string>>(new Set());
@@ -38,6 +44,13 @@ function Home() {
   const [mealplandata, setmealplandata] = useState<DayMeals[]>([]);
   const [userDetails, setUserDetails] = useState<UserFormData | null>(null);
   const selectedDay = mealplandata?.[selectedDayIndex];
+
+  // Transform weight history from API
+  const weightHistory = weightHistoryData?.weightHistory?.map((entry: any) => ({
+    date: new Date(entry.date).toISOString().split('T')[0],
+    weight: entry.weight,
+    goal: entry.goal || 70,
+  })) || [];
 
   const completedMealsToday = selectedDay?.meals?.filter((meal) =>
     completedMeals.has(meal.id),
@@ -68,7 +81,11 @@ function Home() {
     setSelectedDayIndex((prev) => Math.min(mealplandata?.length - 1, prev + 1));
   };
 
-  const toggleMealComplete = (mealId: string) => {
+  const toggleMealComplete = async (mealId: string) => {
+    const isCurrentlyCompleted = completedMeals.has(mealId);
+    const newCompletionState = !isCurrentlyCompleted;
+
+    // Optimistically update UI
     setCompletedMeals((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(mealId)) {
@@ -78,6 +95,29 @@ function Home() {
       }
       return newSet;
     });
+
+    try {
+      // Call API to update meal completion status
+      await completeMeal({
+        mealId,
+        isCompleted: newCompletionState,
+      }).unwrap();
+      
+      console.log(`Meal ${mealId} marked as ${newCompletionState ? 'completed' : 'incomplete'}`);
+    } catch (error) {
+      console.error("Failed to update meal completion:", error);
+      
+      // Revert optimistic update on error
+      setCompletedMeals((prev) => {
+        const newSet = new Set(prev);
+        if (newCompletionState) {
+          newSet.delete(mealId);
+        } else {
+          newSet.add(mealId);
+        }
+        return newSet;
+      });
+    }
   };
 
 
@@ -94,6 +134,7 @@ function Home() {
             height: details.height,
             age: details.age,
             weight: details.weight,
+            goalWeight: details.goalWeight,
             bmi: details.bmi,
             preferences: details.preferences,
           });
@@ -103,6 +144,7 @@ function Home() {
                 height: details.height,
                 age: details.age,
                 weight: details.weight,
+                goalWeight: details.goalWeight,
                 bmi: details.bmi,
                 preferences: details.preferences,
                 id: details.id,
@@ -136,11 +178,18 @@ function Home() {
               time: meal.time,
             }))
           }));
-          console.log(transformedData)
           setmealplandata(transformedData);
+          
+          const completedMealIds = new Set<string>();
+          response.mealPlan.days.forEach((day: any) => {
+            day.meals.forEach((meal: any) => {
+              if (meal.isCompleted === true) {
+                completedMealIds.add(meal.id);
+              }
+            });
+          });
+          setCompletedMeals(completedMealIds);
         }
-        
-        console.log("User meals fetched:", response);
       } catch (error) {
         console.error("Failed to fetch user meals:", error);
       }
@@ -151,12 +200,25 @@ function Home() {
   }, []); 
 
   const handleUserDetailsSubmit = async (data: UserFormData) => {
+    const previousWeight = userDetails?.weight;
+    const hasWeightChanged = previousWeight !== data.weight;
+    
     setUserDetails(data);
     setShowUserForm(false);
 
     try {
+      // Save user preferences
       const result = await savePrefrence(data).unwrap();
       console.log("User details submitted:", data, result);
+
+      // Add weight entry to history (creates new entry or updates today's entry)
+      const today = new Date().toISOString().split('T')[0];
+      await addWeightEntry({ 
+        weight: data.weight, 
+        date: today,
+        goal: data.goalWeight 
+      }).unwrap();
+      console.log(hasWeightChanged ? "Weight entry updated" : "Weight entry added");
     } catch (error) {
       console.error("Failed to save preferences:", error);
     }
@@ -263,7 +325,9 @@ function Home() {
         </div>
 
         <div className="mb-8">
-          <WeightTracker weightHistory={weightHistory} />
+          <WeightTracker 
+            weightHistory={weightHistory} 
+          />
         </div>
       </div>
 

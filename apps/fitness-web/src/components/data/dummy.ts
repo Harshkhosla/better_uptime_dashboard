@@ -188,5 +188,7 @@ export const weightHistory: WeightEntry[] = [
   { date: "2025-10-10", weight: 77.2, goal: 70 },
   { date: "2025-10-15", weight: 76.5, goal: 70 },
   { date: "2025-10-20", weight: 75.8, goal: 70 },
-  { date: "2025-10-25", weight: 75.0, goal: 70 },
+  { date: "2025-10-23", weight: 75.0, goal: 70 },
+  { date: "2025-10-25", weight: 73.0, goal: 70 },
+  { date: "2025-10-27", weight: 72.0, goal: 70 },
 ];

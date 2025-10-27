@@ -5,11 +5,14 @@ interface WeightTrackerProps {
   weightHistory: WeightEntry[];
 }
 
-export default function WeightTracker({ weightHistory }: WeightTrackerProps) {
+export default function WeightTracker({ 
+  weightHistory
+}: WeightTrackerProps) {
   const latestEntry = weightHistory[weightHistory.length - 1];
-  const startWeight = weightHistory[0].weight;
-  const currentWeight = latestEntry.weight;
-  const goalWeight = latestEntry.goal;
+
+  const startWeight = weightHistory[0]?.weight || 0;
+  const currentWeight = latestEntry?.weight || 0;
+  const goalWeight = latestEntry?.goal || 0;
   const totalLoss = startWeight - currentWeight;
   const remainingLoss = currentWeight - goalWeight;
   const progressPercentage =
@@ -20,6 +23,16 @@ export default function WeightTracker({ weightHistory }: WeightTrackerProps) {
   const minWeight =
     Math.min(...weightHistory.map((e) => e.weight), goalWeight) - 2;
   const weightRange = maxWeight - minWeight;
+
+  if (!latestEntry || weightHistory.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div className="text-center text-gray-500">
+          No weight history available
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -70,7 +83,7 @@ export default function WeightTracker({ weightHistory }: WeightTrackerProps) {
 
             return (
               <div
-                key={entry.date}
+                key={`${entry.date}-${index}`}
                 className="flex-1 flex flex-col items-center gap-2"
               >
                 <div className="relative w-full" style={{ height: "180px" }}>
@@ -87,7 +100,7 @@ export default function WeightTracker({ weightHistory }: WeightTrackerProps) {
                     style={{ height: `${height}%` }}
                   >
                     {isLatest && (
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs font-bold px-2 py-1 rounded whitespace-nowrap">
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded whitespace-nowrap shadow-lg">
                         {entry.weight} kg
                       </div>
                     )}

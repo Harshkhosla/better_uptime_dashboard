@@ -15,7 +15,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Websites", "User", "llm"],
+  tagTypes: ["Websites", "User", "llm", "Weight"],
   endpoints: (builder) => ({
     signup: builder.mutation<
       { token: string; email: string },
@@ -45,6 +45,7 @@ export const api = createApi({
         height: number;
         age: number;
         weight: number;
+        goalWeight?: number;
         bmi: number;
         preferences: string;
       }
@@ -96,6 +97,59 @@ export const api = createApi({
       }),
       invalidatesTags: ["User"],
     }),
+    completeMeal: builder.mutation<
+      { success: boolean; meal: any },
+      { mealId: string; isCompleted: boolean }
+    >({
+      query: ({ mealId, isCompleted }) => ({
+        url: `/llm/meals/${mealId}/complete`,
+        method: "PATCH",
+        body: { isCompleted },
+      }),
+      invalidatesTags: ["User"],
+    }),
+    addWeightEntry: builder.mutation<
+      { success: boolean; weightEntry: any },
+      { weight: number; date?: string; goal?: number; note?: string }
+    >({
+      query: (data) => ({
+        url: "/weight/add",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Weight", "User"],
+    }),
+    getWeightHistory: builder.query<
+      { success: boolean; weightHistory: any[]; count: number },
+      { limit?: number; startDate?: string; endDate?: string }
+    >({
+      query: (params) => ({
+        url: "/weight/history",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Weight"],
+    }),
+    getWeightStats: builder.query<
+      { success: boolean; stats: any },
+      void
+    >({
+      query: () => ({
+        url: "/weight/stats",
+        method: "GET",
+      }),
+      providesTags: ["Weight"],
+    }),
+    deleteWeightEntry: builder.mutation<
+      { success: boolean; message: string },
+      string
+    >({
+      query: (id) => ({
+        url: `/weight/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Weight", "User"],
+    }),
   }),
 });
 
@@ -105,7 +159,12 @@ export const {
   useSaveprefrenceMutation,
   useGetuserdetailsMutation,
   useGetUsermealsMutation,
-  useGetlatestUsermealsMutation
+  useGetlatestUsermealsMutation,
+  useCompleteMealMutation,
+  useAddWeightEntryMutation,
+  useGetWeightHistoryQuery,
+  useGetWeightStatsQuery,
+  useDeleteWeightEntryMutation,
 } = api;
 
 export type User = { id: string; email: string; name?: string };
@@ -113,6 +172,7 @@ export type UserDetails = {
   weight: number;
   bmi: number;
   height: number;
+  goalWeight?: number;
   preferences: string;
   age: number;
   id?: string;

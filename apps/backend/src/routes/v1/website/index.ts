@@ -11,7 +11,7 @@ router.post("/updateUserDetails", authMiddleware, async (req, res) => {
     return;
   }
 
-  const { weight, bmi, height, preferences, age } = req.body;
+  const { weight, bmi, height, preferences, age, goalWeight } = req.body;
 
   try {
     // @ts-ignore
@@ -27,6 +27,7 @@ router.post("/updateUserDetails", authMiddleware, async (req, res) => {
         height: height,
         preferences: preferences,
         age: age,
+        goalWeight: goalWeight || null,
       },
       create: {
         weight: weight,
@@ -34,6 +35,7 @@ router.post("/updateUserDetails", authMiddleware, async (req, res) => {
         height: height,
         preferences: preferences,
         age: age,
+        goalWeight: goalWeight || null,
         ownerId: userId,
       },
     });

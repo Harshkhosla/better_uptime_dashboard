@@ -19,6 +19,7 @@ export interface UserFormData {
   height: number;
   age: number;
   weight: number;
+  goalWeight?: number;
   bmi: number;
   preferences: string;
 }
@@ -40,6 +41,7 @@ export default function UserDetailsForm({
     height: initialData?.height || 0,
     age: initialData?.age || 0,
     weight: initialData?.weight || 0,
+    goalWeight: initialData?.goalWeight || 0,
     bmi: initialData?.bmi || 0,
     preferences: initialData?.preferences || "",
   });
@@ -183,7 +185,7 @@ export default function UserDetailsForm({
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 <div className="flex items-center gap-2">
                   <Weight className="w-4 h-4 text-blue-600" />
-                  Weight (kg)
+                  Current Weight (kg)
                 </div>
               </label>
               <input
@@ -199,6 +201,35 @@ export default function UserDetailsForm({
                 <p className="mt-1 text-sm text-red-600">{errors.weight}</p>
               )}
             </div>
+
+            {/* Goal Weight Input */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <div className="flex items-center gap-2">
+                  <Target className="w-4 h-4 text-emerald-600" />
+                  Goal Weight (kg)
+                </div>
+              </label>
+              <input
+                type="number"
+                value={formData.goalWeight || ""}
+                onChange={(e) => handleChange("goalWeight", Number(e.target.value))}
+                placeholder="e.g., 65"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all border-gray-300`}
+              />
+              {formData.weight && formData.goalWeight && (
+                <p className="mt-1 text-sm text-gray-600">
+                  {formData.weight > formData.goalWeight 
+                    ? `Goal: Lose ${(formData.weight - formData.goalWeight).toFixed(1)} kg`
+                    : formData.weight < formData.goalWeight
+                    ? `Goal: Gain ${(formData.goalWeight - formData.weight).toFixed(1)} kg`
+                    : 'Maintain current weight'}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             {/* BMI Display (Auto-calculated) */}
             <div>

@@ -28,6 +28,7 @@ model User {
   userDemoGraphs UserDemoGraph[] @relation("UserDemoGraphs")
   mealPlans         MealPlan[]
   chatHistory       ChatHistory[]
+  weightHistory     WeightHistory[]
 }
 
 
@@ -90,12 +91,29 @@ model ChatHistory {
   
   @@index([userId, createdAt])
 }
+
+model WeightHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  weight    Float
+  goal      Float?
+  note      String?  // Optional note about the weigh-in
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId, date])
+  @@unique([userId, date]) // Prevent duplicate entries for same date
+}
+
 model UserDetails {
   id    String @id @default(uuid())
   owner       User     @relation("UserDetails", fields: [ownerId], references: [id])
   age     Int
   weight Int
   height  Int
+  goalWeight  Int?
   bmi  Int
   preferences String 
   ownerId     String @unique
