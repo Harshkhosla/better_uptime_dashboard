@@ -8,7 +8,7 @@
     "lint": "eslint . --ext .js,.ts,.tsx",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "dev":  "nodemon --watch src --ext ts --exec ts-node src/index.ts",
-    "build": "tsc",
+    "build": "tsc --noEmitOnError false",
     "start": "node dist/index.js",
     "postinstall": "cd ../../packages/prisma && npx prisma generate"
   },
