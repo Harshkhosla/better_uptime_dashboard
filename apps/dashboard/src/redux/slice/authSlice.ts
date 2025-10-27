@@ -11,7 +11,16 @@ interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  userDetails: UserDetails | null;
 }
+
+ interface UserDetails 
+  {  weight: number,
+      bmi: number,
+      height: number,
+      preferences: string,
+      age: number,id?: string; 
+    }
 
 const storedToken = getStoredToken();
 const isTokenValid = isValidToken(storedToken);
@@ -22,6 +31,7 @@ const initialState: AuthState = {
   isAuthenticated: isTokenValid,
   loading: false,
   error: null,
+  userDetails: null,
 };
 
 const authSlice = createSlice({
@@ -30,15 +40,24 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: User; token: string }>,
+      action: PayloadAction<{
+        token?: string;
+        user?: { id: string; email: string; name?: string };
+        userDetails?: UserDetails;
+      }>
     ) => {
-      const { user, token } = action.payload;
-      state.user = user;
-      state.token = token;
-      state.isAuthenticated = true;
-      state.error = null;
-      if (typeof window !== "undefined") {
-        localStorage.setItem("token", token);
+       if (action.payload.token) {
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
+        if (typeof window !== "undefined") {
+          localStorage.setItem("token", action.payload.token);
+        }
+      }
+      if (action.payload.user) {
+        state.user = action.payload.user;
+      }
+      if (action.payload.userDetails) {
+        state.userDetails = action.payload.userDetails;
       }
     },
     logout: (state) => {

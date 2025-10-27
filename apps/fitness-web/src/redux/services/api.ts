@@ -38,10 +38,49 @@ export const api = createApi({
       }),
       invalidatesTags: ["User"],
     }),
+    saveprefrence: builder.mutation<
+      { user: User },
+      {  height: number;
+  age: number;
+  weight: number;
+  bmi: number;
+  preferences: string; }
+    >({
+      query: (credentials) => ({
+        url: "/website/updateUserDetails",
+        method: "POST",
+        body: credentials,
+      }),
+      invalidatesTags: ["Websites"],
+    }),
+    getuserdetails: builder.mutation<
+      { 
+        message: {
+          id: string;
+          email: string;
+          name: string | null;
+          userDetailsFilled: boolean;
+          userDetails: UserDetails | null;
+          createdAt: string;
+          updatedAt: string;
+        }
+      },
+      {}
+    >({
+      query: () => ({
+        url: "/website/userDetails",
+        method: "GET" }),
+      invalidatesTags: ["Websites"],
+    }),
   }),
 });
 
-export const { useSignupMutation, useLoginMutation } = api;
+export const { useSignupMutation, useLoginMutation , useSaveprefrenceMutation , useGetuserdetailsMutation } = api;
 
 export type User = { id: string; email: string; name?: string };
+export type UserDetails = {  weight: number,
+      bmi: number,
+      height: number,
+      preferences: string,
+      age: number,id?: string; };
 export type Website = { id: string; url: string; timeAdded: string };

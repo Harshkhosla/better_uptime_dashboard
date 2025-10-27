@@ -10,24 +10,68 @@ router.post("/updateUserDetails", authMiddleware, async (req, res) => {
     });
     return;
   }
-  const { weight, bmi, height, preferences, age } = req.body.formData;
-  const userdetailsupdating = await Prismaclient.userDetails.create({
-    data: {
-      weight: weight,
-      bmi: bmi,
-      height: height,
-      preferences: preferences,
-      age: age,
-      // @ts-ignore
-      ownerId: req?.UserID,
-    },
-  });
+  
+  const { weight, bmi, height, preferences, age } = req.body;
+  
+  try {
+    // @ts-ignore
+    const userId = req?.UserID;
+    
+    const userDetailsUpdating = await Prismaclient.userDetails.upsert({
+      where: {
+        ownerId: userId,
+      },
+      update: {
+        weight: weight,
+        bmi: bmi,
+        height: height,
+        preferences: preferences,
+        age: age,
+      },
+      create: {
+        weight: weight,
+        bmi: bmi,
+        height: height,
+        preferences: preferences,
+        age: age,
+        ownerId: userId,
+      },
+    });
 
-  res.status(200).json({
-    message: userdetailsupdating,
-  });
-  return;
+    // Update user's userDetailsFilled flag
+    await Prismaclient.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        userDetailsFilled: true,
+      },
+    });
+
+    res.status(200).json({
+      message: userDetailsUpdating,
+    });
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    res.status(500).json({
+      message: "Failed to update user details",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
 });
+router.get("/userDetails",authMiddleware, async(req ,res )=>{
+  const userDetails = await Prismaclient.user.findFirst({
+    where:{
+      // @ts-ignore
+       id: req?.UserID,
+    }, include:{
+      userDetails:true
+    }
+  })
+  res.status(200).json({
+    message:userDetails
+  })
+} )
 router.post("/website", authMiddleware, async (req, res) => {
   if (!req.body) {
     res.status(403).json({

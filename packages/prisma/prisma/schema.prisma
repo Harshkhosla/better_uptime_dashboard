@@ -24,6 +24,7 @@ model User {
   websites  Website[] @relation("UserWebsites")
   regions   Region[]  @relation("UserRegions") 
   userDetails UserDetails?  @relation("UserDetails")
+  userDetailsFilled Boolean?
   userDemoGraphs UserDemoGraph[] @relation("UserDemoGraphs")
 }
 

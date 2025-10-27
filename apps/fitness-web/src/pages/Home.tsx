@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Droplet,
   Footprints,
@@ -6,16 +6,27 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  UserPlus,
 } from "lucide-react";
 import StatCard from "../components/sections/StatCard";
 import MealCard from "../components/sections/MealCard";
 import CompactProgressCard from "../components/sections/CompactProgressCard";
 import WeightTracker from "../components/sections/WeightTracker";
+import UserDetailsForm, { type UserFormData } from "../components/sections/UserDetailsForm";
 import { userStats, mealPlan, weightHistory } from "../components/data/dummy";
+import { useGetuserdetailsMutation, useSaveprefrenceMutation } from "../redux/services/api";
+import { useDispatch, useSelector } from "react-redux";
+import { setCredentials } from "../redux/slices/authSlice";
+import type { RootState } from "../redux/store";
 
 function Home() {
+  const dispatch = useDispatch();
+  const token = useSelector((state: RootState) => state.auth.token);
+  const user = useSelector((state: RootState) => state.auth.user);
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [completedMeals, setCompletedMeals] = useState<Set<string>>(new Set());
+  const [showUserForm, setShowUserForm] = useState(false);
+  const [userDetails, setUserDetails] = useState<UserFormData | null>(null);
   const selectedDay = mealPlan[selectedDayIndex];
 
   const completedMealsToday = selectedDay.meals.filter((meal) =>
@@ -58,17 +69,77 @@ function Home() {
       return newSet;
     });
   };
+  
+  const [savePrefrence] = useSaveprefrenceMutation();
+  const [getUserDetails] = useGetuserdetailsMutation();
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await getUserDetails({}).unwrap();
+        console.log('User details fetched:', response);
+        
+        if (response?.message?.userDetails) {
+          const details = response.message.userDetails;
+          setUserDetails({
+            height: details.height,
+            age: details.age,
+            weight: details.weight,
+            bmi: details.bmi,
+            preferences: details.preferences,
+          });
+          dispatch(setCredentials({
+            userDetails: {
+              height: details.height,
+              age: details.age,
+              weight: details.weight,
+              bmi: details.bmi,
+              preferences: details.preferences,
+              id: details.id,
+            }
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch user details:', error);
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
+
+  const handleUserDetailsSubmit = async (data: UserFormData) => {
+    setUserDetails(data);
+    setShowUserForm(false);
+    
+    try {
+      const result = await savePrefrence(data).unwrap();
+      console.log('User details submitted:', data, result);
+    } catch (error) {
+      console.error('Failed to save preferences:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-14 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Health Dashboard
-          </h1>
-          <p className="text-gray-600">
-            Track your daily progress and stay on target
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                Health Dashboard
+              </h1>
+              <p className="text-gray-600">
+                Track your daily progress and stay on target
+              </p>
+            </div>
+            <button
+              onClick={() => setShowUserForm(true)}
+              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow-lg shadow-blue-500/30"
+            >
+              <UserPlus className="w-5 h-5" />
+              {userDetails ? 'Update Profile' : 'Setup Profile'}
+            </button>
+          </div>
         </header>
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 pb-10">
           <div className="flex items-center justify-between mb-6">
@@ -152,6 +223,15 @@ function Home() {
           <WeightTracker weightHistory={weightHistory} />
         </div>
       </div>
+
+      {/* User Details Form Modal */}
+      {showUserForm && (
+        <UserDetailsForm
+          onSubmit={handleUserDetailsSubmit}
+          onClose={() => setShowUserForm(false)}
+          initialData={userDetails || undefined}
+        />
+      )}
     </div>
   );
 }

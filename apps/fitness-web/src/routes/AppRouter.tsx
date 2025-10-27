@@ -16,8 +16,8 @@ export default function AppRouter() {
       <Navigation />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/home" element={<FeaturesPage />} />
-        <Route path="/feature" element={<Home />} />
+        <Route path="/feature" element={<FeaturesPage />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/coaches" element={<CoachesPage />} />
         <Route path="/login" element={<LoginPage />} />

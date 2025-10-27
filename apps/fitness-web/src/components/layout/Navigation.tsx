@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Dumbbell, Menu, X } from "lucide-react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../redux/store";
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -8,8 +10,11 @@ export default function Navigation() {
 
   const handleMobileMenuClose = () => {
     setMobileMenuOpen(false);
-  };
+  };  
 
+  const token = useSelector((state: RootState) => state.auth.token);
+  console.log(token,'sdv jsbkdvbdjskbkdbdsk')
+  const user = useSelector((state: RootState) => state.auth.user);
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -26,6 +31,16 @@ export default function Navigation() {
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
+            <Link
+              to="/home"
+              className={`transition-colors font-medium ${
+                isActive("/home")
+                  ? "text-blue-600"
+                  : "text-slate-700 hover:text-blue-600"
+              }`}
+            >
+              Home
+            </Link>
             <Link
               to="/features"
               className={`transition-colors font-medium ${
@@ -56,7 +71,9 @@ export default function Navigation() {
             >
               Coaches
             </Link>
-            <Link
+          { !token ?
+          <>
+          <Link
               to="/login"
               className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
             >
@@ -68,6 +85,7 @@ export default function Navigation() {
             >
               Get Started
             </Link>
+            </>:null }
           </div>
 
           <button
@@ -119,7 +137,8 @@ export default function Navigation() {
             >
               Coaches
             </Link>
-            <div className="pt-3 space-y-3 border-t border-blue-100">
+           { token ?
+           <div className="pt-3 space-y-3 border-t border-blue-100">
               <Link
                 to="/login"
                 onClick={handleMobileMenuClose}
@@ -135,6 +154,8 @@ export default function Navigation() {
                 Get Started
               </Link>
             </div>
+            :
+            null}
           </div>
         </div>
       )}

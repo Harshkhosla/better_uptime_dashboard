@@ -9,11 +9,18 @@ export interface SignupRequest {
 }
 export interface User {
   id: string;
+  email: string;
+  name?: string;
   token?: string;
 }
 export interface SignupResponse {
   user: User;
   message: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  token: string;
 }
 
 export interface AuthError {
@@ -60,7 +67,7 @@ export const authApi = createApi({
       invalidatesTags: ["User"],
     }),
 
-    login: builder.mutation<SignupResponse, SignupRequest>({
+    login: builder.mutation<LoginResponse, SignupRequest>({
       query: (credentials) => ({
         url: "/users/login",
         method: "POST",

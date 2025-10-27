@@ -16,16 +16,29 @@ function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await login({ email, password }).unwrap();
-    console.log(result, "dsvjhbsdvbvd");
-    dispatch(
-      setCredentials({
-        user: { email: email },
-        token: result?.token || "",
-      }),
-    );
-    navigate("/");
-    console.log("Login submitted:", { email, password, isMagicLink });
+    try {
+      const result = await login({ email, password }).unwrap();
+      console.log(result, "Login response");
+      
+      // Decode the JWT token to get user ID (or fetch user details from another endpoint)
+      const tokenPayload = JSON.parse(atob(result.token.split('.')[1]));
+      
+      dispatch(
+        setCredentials({
+          token: result.token,
+          user: {
+            id: tokenPayload.id,
+            email: email,
+          },
+        }),
+      );
+      
+      navigate("/home");
+      console.log("Login successful");
+    } catch (error) {
+      console.error("Login failed:", error);
+      // You can add error handling here (show toast, error message, etc.)
+    }
   };
 
   const handleSwitchToSignup = () => navigate("/signup");
