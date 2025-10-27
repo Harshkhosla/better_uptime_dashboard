@@ -14,13 +14,14 @@ interface AuthState {
   userDetails: UserDetails | null;
 }
 
- interface UserDetails 
-  {  weight: number,
-      bmi: number,
-      height: number,
-      preferences: string,
-      age: number,id?: string; 
-    }
+interface UserDetails {
+  weight: number;
+  bmi: number;
+  height: number;
+  preferences: string;
+  age: number;
+  id?: string;
+}
 
 const storedToken = getStoredToken();
 const isTokenValid = isValidToken(storedToken);
@@ -44,9 +45,9 @@ const authSlice = createSlice({
         token?: string;
         user?: { id: string; email: string; name?: string };
         userDetails?: UserDetails;
-      }>
+      }>,
     ) => {
-       if (action.payload.token) {
+      if (action.payload.token) {
         state.token = action.payload.token;
         state.isAuthenticated = true;
         if (typeof window !== "undefined") {

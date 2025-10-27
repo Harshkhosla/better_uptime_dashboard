@@ -40,11 +40,13 @@ export const api = createApi({
     }),
     saveprefrence: builder.mutation<
       { user: User },
-      {  height: number;
-  age: number;
-  weight: number;
-  bmi: number;
-  preferences: string; }
+      {
+        height: number;
+        age: number;
+        weight: number;
+        bmi: number;
+        preferences: string;
+      }
     >({
       query: (credentials) => ({
         url: "/website/updateUserDetails",
@@ -54,7 +56,7 @@ export const api = createApi({
       invalidatesTags: ["Websites"],
     }),
     getuserdetails: builder.mutation<
-      { 
+      {
         message: {
           id: string;
           email: string;
@@ -63,24 +65,33 @@ export const api = createApi({
           userDetails: UserDetails | null;
           createdAt: string;
           updatedAt: string;
-        }
+        };
       },
       {}
     >({
       query: () => ({
         url: "/website/userDetails",
-        method: "GET" }),
+        method: "GET",
+      }),
       invalidatesTags: ["Websites"],
     }),
   }),
 });
 
-export const { useSignupMutation, useLoginMutation , useSaveprefrenceMutation , useGetuserdetailsMutation } = api;
+export const {
+  useSignupMutation,
+  useLoginMutation,
+  useSaveprefrenceMutation,
+  useGetuserdetailsMutation,
+} = api;
 
 export type User = { id: string; email: string; name?: string };
-export type UserDetails = {  weight: number,
-      bmi: number,
-      height: number,
-      preferences: string,
-      age: number,id?: string; };
+export type UserDetails = {
+  weight: number;
+  bmi: number;
+  height: number;
+  preferences: string;
+  age: number;
+  id?: string;
+};
 export type Website = { id: string; url: string; timeAdded: string };

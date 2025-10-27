@@ -19,10 +19,10 @@ function Login() {
     try {
       const result = await login({ email, password }).unwrap();
       console.log(result, "Login response");
-      
+
       // Decode the JWT token to get user ID (or fetch user details from another endpoint)
-      const tokenPayload = JSON.parse(atob(result.token.split('.')[1]));
-      
+      const tokenPayload = JSON.parse(atob(result.token.split(".")[1]));
+
       dispatch(
         setCredentials({
           token: result.token,
@@ -32,7 +32,7 @@ function Login() {
           },
         }),
       );
-      
+
       navigate("/home");
       console.log("Login successful");
     } catch (error) {

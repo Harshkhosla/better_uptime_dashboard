@@ -1,5 +1,13 @@
-import { useState } from 'react';
-import { User, Ruler, Calendar, Weight, Target, X, Activity } from 'lucide-react';
+import { useState } from "react";
+import {
+  User,
+  Ruler,
+  Calendar,
+  Weight,
+  Target,
+  X,
+  Activity,
+} from "lucide-react";
 
 interface UserDetailsFormProps {
   onSubmit: (data: UserFormData) => void;
@@ -16,23 +24,29 @@ export interface UserFormData {
 }
 
 const fitnessGoals = [
-  'Weight Loss',
-  'Muscle Gain',
-  'Maintenance',
-  'Athletic Performance',
-  'General Health',
+  "Weight Loss",
+  "Muscle Gain",
+  "Maintenance",
+  "Athletic Performance",
+  "General Health",
 ];
 
-export default function UserDetailsForm({ onSubmit, onClose, initialData }: UserDetailsFormProps) {
+export default function UserDetailsForm({
+  onSubmit,
+  onClose,
+  initialData,
+}: UserDetailsFormProps) {
   const [formData, setFormData] = useState<UserFormData>({
     height: initialData?.height || 0,
     age: initialData?.age || 0,
     weight: initialData?.weight || 0,
     bmi: initialData?.bmi || 0,
-    preferences: initialData?.preferences || '',
+    preferences: initialData?.preferences || "",
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof UserFormData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof UserFormData, string>>
+  >({});
 
   // Calculate BMI automatically when height or weight changes
   const calculateBMI = (weight: number, height: number) => {
@@ -45,17 +59,17 @@ export default function UserDetailsForm({ onSubmit, onClose, initialData }: User
 
   const handleChange = (field: keyof UserFormData, value: string | number) => {
     const newFormData = { ...formData, [field]: value };
-    
+
     // Auto-calculate BMI when weight or height changes
-    if (field === 'weight' || field === 'height') {
+    if (field === "weight" || field === "height") {
       newFormData.bmi = calculateBMI(
-        field === 'weight' ? Number(value) : newFormData.weight,
-        field === 'height' ? Number(value) : newFormData.height
+        field === "weight" ? Number(value) : newFormData.weight,
+        field === "height" ? Number(value) : newFormData.height,
       );
     }
-    
+
     setFormData(newFormData);
-    
+
     // Clear error for this field
     if (errors[field]) {
       setErrors({ ...errors, [field]: undefined });
@@ -66,16 +80,16 @@ export default function UserDetailsForm({ onSubmit, onClose, initialData }: User
     const newErrors: Partial<Record<keyof UserFormData, string>> = {};
 
     if (!formData.height || formData.height < 50 || formData.height > 300) {
-      newErrors.height = 'Please enter a valid height (50-300 cm)';
+      newErrors.height = "Please enter a valid height (50-300 cm)";
     }
     if (!formData.age || formData.age < 1 || formData.age > 120) {
-      newErrors.age = 'Please enter a valid age (1-120 years)';
+      newErrors.age = "Please enter a valid age (1-120 years)";
     }
     if (!formData.weight || formData.weight < 20 || formData.weight > 500) {
-      newErrors.weight = 'Please enter a valid weight (20-500 kg)';
+      newErrors.weight = "Please enter a valid weight (20-500 kg)";
     }
     if (!formData.preferences) {
-      newErrors.preferences = 'Please select your fitness goal';
+      newErrors.preferences = "Please select your fitness goal";
     }
 
     setErrors(newErrors);
@@ -90,10 +104,10 @@ export default function UserDetailsForm({ onSubmit, onClose, initialData }: User
   };
 
   const getBMICategory = (bmi: number) => {
-    if (bmi < 18.5) return { text: 'Underweight', color: 'text-yellow-600' };
-    if (bmi < 25) return { text: 'Normal', color: 'text-green-600' };
-    if (bmi < 30) return { text: 'Overweight', color: 'text-orange-600' };
-    return { text: 'Obese', color: 'text-red-600' };
+    if (bmi < 18.5) return { text: "Underweight", color: "text-yellow-600" };
+    if (bmi < 25) return { text: "Normal", color: "text-green-600" };
+    if (bmi < 30) return { text: "Overweight", color: "text-orange-600" };
+    return { text: "Obese", color: "text-red-600" };
   };
 
   const bmiCategory = formData.bmi > 0 ? getBMICategory(formData.bmi) : null;
@@ -104,7 +118,9 @@ export default function UserDetailsForm({ onSubmit, onClose, initialData }: User
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <User className="w-6 h-6 text-blue-600" />
-            <h2 className="text-2xl font-bold text-gray-900">Your Health Profile</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Your Health Profile
+            </h2>
           </div>
           {onClose && (
             <button
@@ -128,11 +144,11 @@ export default function UserDetailsForm({ onSubmit, onClose, initialData }: User
               </label>
               <input
                 type="number"
-                value={formData.height || ''}
-                onChange={(e) => handleChange('height', Number(e.target.value))}
+                value={formData.height || ""}
+                onChange={(e) => handleChange("height", Number(e.target.value))}
                 placeholder="e.g., 175"
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
-                  errors.height ? 'border-red-500' : 'border-gray-300'
+                  errors.height ? "border-red-500" : "border-gray-300"
                 }`}
               />
               {errors.height && (
@@ -150,11 +166,11 @@ export default function UserDetailsForm({ onSubmit, onClose, initialData }: User
               </label>
               <input
                 type="number"
-                value={formData.age || ''}
-                onChange={(e) => handleChange('age', Number(e.target.value))}
+                value={formData.age || ""}
+                onChange={(e) => handleChange("age", Number(e.target.value))}
                 placeholder="e.g., 28"
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
-                  errors.age ? 'border-red-500' : 'border-gray-300'
+                  errors.age ? "border-red-500" : "border-gray-300"
                 }`}
               />
               {errors.age && (
@@ -172,11 +188,11 @@ export default function UserDetailsForm({ onSubmit, onClose, initialData }: User
               </label>
               <input
                 type="number"
-                value={formData.weight || ''}
-                onChange={(e) => handleChange('weight', Number(e.target.value))}
+                value={formData.weight || ""}
+                onChange={(e) => handleChange("weight", Number(e.target.value))}
                 placeholder="e.g., 70"
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
-                  errors.weight ? 'border-red-500' : 'border-gray-300'
+                  errors.weight ? "border-red-500" : "border-gray-300"
                 }`}
               />
               {errors.weight && (
@@ -195,10 +211,12 @@ export default function UserDetailsForm({ onSubmit, onClose, initialData }: User
               <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-bold text-gray-900">
-                    {formData.bmi > 0 ? formData.bmi : '-'}
+                    {formData.bmi > 0 ? formData.bmi : "-"}
                   </span>
                   {bmiCategory && (
-                    <span className={`text-sm font-semibold ${bmiCategory.color}`}>
+                    <span
+                      className={`text-sm font-semibold ${bmiCategory.color}`}
+                    >
                       {bmiCategory.text}
                     </span>
                   )}
@@ -217,9 +235,9 @@ export default function UserDetailsForm({ onSubmit, onClose, initialData }: User
             </label>
             <select
               value={formData.preferences}
-              onChange={(e) => handleChange('preferences', e.target.value)}
+              onChange={(e) => handleChange("preferences", e.target.value)}
               className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
-                errors.preferences ? 'border-red-500' : 'border-gray-300'
+                errors.preferences ? "border-red-500" : "border-gray-300"
               }`}
             >
               <option value="">Select your fitness goal</option>
@@ -249,7 +267,7 @@ export default function UserDetailsForm({ onSubmit, onClose, initialData }: User
               type="submit"
               className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow-lg shadow-blue-500/30"
             >
-             {initialData? "Update Profile":"Save Profile"}
+              {initialData ? "Update Profile" : "Save Profile"}
             </button>
           </div>
         </form>

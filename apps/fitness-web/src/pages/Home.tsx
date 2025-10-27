@@ -12,9 +12,14 @@ import StatCard from "../components/sections/StatCard";
 import MealCard from "../components/sections/MealCard";
 import CompactProgressCard from "../components/sections/CompactProgressCard";
 import WeightTracker from "../components/sections/WeightTracker";
-import UserDetailsForm, { type UserFormData } from "../components/sections/UserDetailsForm";
+import UserDetailsForm, {
+  type UserFormData,
+} from "../components/sections/UserDetailsForm";
 import { userStats, mealPlan, weightHistory } from "../components/data/dummy";
-import { useGetuserdetailsMutation, useSaveprefrenceMutation } from "../redux/services/api";
+import {
+  useGetuserdetailsMutation,
+  useSaveprefrenceMutation,
+} from "../redux/services/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
 import type { RootState } from "../redux/store";
@@ -69,7 +74,7 @@ function Home() {
       return newSet;
     });
   };
-  
+
   const [savePrefrence] = useSaveprefrenceMutation();
   const [getUserDetails] = useGetuserdetailsMutation();
 
@@ -77,8 +82,8 @@ function Home() {
     const fetchUserDetails = async () => {
       try {
         const response = await getUserDetails({}).unwrap();
-        console.log('User details fetched:', response);
-        
+        console.log("User details fetched:", response);
+
         if (response?.message?.userDetails) {
           const details = response.message.userDetails;
           setUserDetails({
@@ -88,19 +93,21 @@ function Home() {
             bmi: details.bmi,
             preferences: details.preferences,
           });
-          dispatch(setCredentials({
-            userDetails: {
-              height: details.height,
-              age: details.age,
-              weight: details.weight,
-              bmi: details.bmi,
-              preferences: details.preferences,
-              id: details.id,
-            }
-          }));
+          dispatch(
+            setCredentials({
+              userDetails: {
+                height: details.height,
+                age: details.age,
+                weight: details.weight,
+                bmi: details.bmi,
+                preferences: details.preferences,
+                id: details.id,
+              },
+            }),
+          );
         }
       } catch (error) {
-        console.error('Failed to fetch user details:', error);
+        console.error("Failed to fetch user details:", error);
       }
     };
 
@@ -110,12 +117,12 @@ function Home() {
   const handleUserDetailsSubmit = async (data: UserFormData) => {
     setUserDetails(data);
     setShowUserForm(false);
-    
+
     try {
       const result = await savePrefrence(data).unwrap();
-      console.log('User details submitted:', data, result);
+      console.log("User details submitted:", data, result);
     } catch (error) {
-      console.error('Failed to save preferences:', error);
+      console.error("Failed to save preferences:", error);
     }
   };
 
@@ -137,7 +144,7 @@ function Home() {
               className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow-lg shadow-blue-500/30"
             >
               <UserPlus className="w-5 h-5" />
-              {userDetails ? 'Update Profile' : 'Setup Profile'}
+              {userDetails ? "Update Profile" : "Setup Profile"}
             </button>
           </div>
         </header>

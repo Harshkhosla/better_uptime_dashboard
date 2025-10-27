@@ -10,10 +10,10 @@ export default function Navigation() {
 
   const handleMobileMenuClose = () => {
     setMobileMenuOpen(false);
-  };  
+  };
 
   const token = useSelector((state: RootState) => state.auth.token);
-  console.log(token,'sdv jsbkdvbdjskbkdbdsk')
+  console.log(token, "sdv jsbkdvbdjskbkdbdsk");
   const user = useSelector((state: RootState) => state.auth.user);
   const isActive = (path: string) => location.pathname === path;
 
@@ -71,21 +71,22 @@ export default function Navigation() {
             >
               Coaches
             </Link>
-          { !token ?
-          <>
-          <Link
-              to="/login"
-              className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/signup"
-              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-2.5 rounded-full hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 font-semibold shadow-lg shadow-blue-600/25"
-            >
-              Get Started
-            </Link>
-            </>:null }
+            {!token ? (
+              <>
+                <Link
+                  to="/login"
+                  className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-2.5 rounded-full hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 font-semibold shadow-lg shadow-blue-600/25"
+                >
+                  Get Started
+                </Link>
+              </>
+            ) : null}
           </div>
 
           <button
@@ -137,25 +138,24 @@ export default function Navigation() {
             >
               Coaches
             </Link>
-           { token ?
-           <div className="pt-3 space-y-3 border-t border-blue-100">
-              <Link
-                to="/login"
-                onClick={handleMobileMenuClose}
-                className="block py-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/signup"
-                onClick={handleMobileMenuClose}
-                className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-full hover:from-blue-700 hover:to-blue-800 transition-all font-medium text-center"
-              >
-                Get Started
-              </Link>
-            </div>
-            :
-            null}
+            {token ? (
+              <div className="pt-3 space-y-3 border-t border-blue-100">
+                <Link
+                  to="/login"
+                  onClick={handleMobileMenuClose}
+                  className="block py-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={handleMobileMenuClose}
+                  className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-full hover:from-blue-700 hover:to-blue-800 transition-all font-medium text-center"
+                >
+                  Get Started
+                </Link>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

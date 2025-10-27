@@ -10,13 +10,13 @@ router.post("/updateUserDetails", authMiddleware, async (req, res) => {
     });
     return;
   }
-  
+
   const { weight, bmi, height, preferences, age } = req.body;
-  
+
   try {
     // @ts-ignore
     const userId = req?.UserID;
-    
+
     const userDetailsUpdating = await Prismaclient.userDetails.upsert({
       where: {
         ownerId: userId,
@@ -59,19 +59,20 @@ router.post("/updateUserDetails", authMiddleware, async (req, res) => {
     });
   }
 });
-router.get("/userDetails",authMiddleware, async(req ,res )=>{
+router.get("/userDetails", authMiddleware, async (req, res) => {
   const userDetails = await Prismaclient.user.findFirst({
-    where:{
+    where: {
       // @ts-ignore
-       id: req?.UserID,
-    }, include:{
-      userDetails:true
-    }
-  })
+      id: req?.UserID,
+    },
+    include: {
+      userDetails: true,
+    },
+  });
   res.status(200).json({
-    message:userDetails
-  })
-} )
+    message: userDetails,
+  });
+});
 router.post("/website", authMiddleware, async (req, res) => {
   if (!req.body) {
     res.status(403).json({
