@@ -267,4 +267,4 @@ router.get("/stats", authMiddleware, async (req: Request, res: Response) => {
   }
 });
 
-export const WeightRouter = router;
+export const WeightRouter: Router = router;

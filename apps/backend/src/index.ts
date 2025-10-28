@@ -1,8 +1,8 @@
-import express from "express";
+import express, { type Application } from "express";
 import v1Router from "./routes/v1/index";
 import cors from "cors";
 
-const app = express();
+const app: Application = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors());
