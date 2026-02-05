@@ -89,8 +89,8 @@ export const MonitorDetail = () => {
           <p
             className={`${isUp ? "text-green-600" : "text-red-600"} text-sm font-medium`}
           >
-            {isUp ? "Up" : "Down"} · Checked every 5
-            minutes
+            {isUp ? "Up" : "Down"} · Checked every {websiteData?.checkInterval || 5}{" "}
+            {websiteData?.checkInterval === 1 ? "minute" : "minutes"}
           </p>
         </div>
         <div className="ml-auto flex items-center space-x-4 text-sm mt-14 text-gray-600">

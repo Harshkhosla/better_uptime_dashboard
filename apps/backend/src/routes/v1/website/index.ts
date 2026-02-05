@@ -82,7 +82,7 @@ router.post("/website", authMiddleware, async (req, res) => {
     });
     return;
   }
-  const { url, alertType, escalationPolicy, notify } = req.body.formData;
+  const { url, alertType, escalationPolicy, notify, checkInterval } = req.body.formData;
   const notificationPref = await Prismaclient.notificationPreference.create({
     data: {
       notifyCall: notify.call,
@@ -96,6 +96,7 @@ router.post("/website", authMiddleware, async (req, res) => {
       url: url,
       alert: alertType,
       escalationPolicy: escalationPolicy,
+      checkInterval: checkInterval ? parseInt(checkInterval) : 5, // Default to 5 if not provided
       notificationPrefId: notificationPref.id,
       // @ts-ignore
       ownerId: req?.UserID,

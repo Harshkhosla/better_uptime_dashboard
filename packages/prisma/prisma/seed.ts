@@ -103,11 +103,11 @@ async function main() {
   // Create Websites for User 1
   console.log("🌐 Creating websites...");
   const websites = [
-    { url: "https://google.com", status: "Up" as const },
-    { url: "https://github.com", status: "Up" as const },
-    { url: "https://stackoverflow.com", status: "Up" as const },
-    { url: "https://example-down.com", status: "DOWN" as const },
-    { url: "http://localhost:3001", status: "Up" as const },
+    { url: "https://google.com", status: "Up" as const, checkInterval: 5 },
+    { url: "https://github.com", status: "Up" as const, checkInterval: 3 },
+    { url: "https://stackoverflow.com", status: "Up" as const, checkInterval: 10 },
+    { url: "https://example-down.com", status: "DOWN" as const, checkInterval: 5 },
+    { url: "http://localhost:3001", status: "Up" as const, checkInterval: 1 },
   ];
 
   for (const site of websites) {
@@ -118,6 +118,7 @@ async function main() {
         alert: site.status === "DOWN" ? "Website is down!" : null,
         acknowledge: site.status === "DOWN" ? "Investigating issue" : null,
         escalationPolicy: "Level 1",
+        checkInterval: site.checkInterval,
         incident: site.status === "DOWN" ? 1 : 0,
         notificationPrefId: notifPref1.id,
         ownerId: user1.id,
@@ -150,6 +151,7 @@ async function main() {
     data: {
       url: "https://npmjs.com",
       timeAdded: new Date(),
+      checkInterval: 5,
       notificationPrefId: notifPref2.id,
       ownerId: user2.id,
     },

@@ -11,6 +11,7 @@ export const CreateMonitors = () => {
   const [formData, setFormData] = useState({
     url: "https://",
     alertType: "unavailable",
+    checkInterval: 5, // Default: 5 minutes
     notify: {
       call: false,
       sms: false,
@@ -120,6 +121,30 @@ export const CreateMonitors = () => {
                     here
                   </a>
                   .
+                </p>
+              </div>
+
+              <div className="border-t border-gray-200 my-4"></div>
+
+              <div>
+                <label className="text-xs font-medium mb-3 block text-gray-700">
+                  Check interval
+                </label>
+                <select
+                  className="bg-white text-gray-900 px-4 py-2 rounded w-full border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+                  name="checkInterval"
+                  value={formData.checkInterval}
+                  onChange={handleChange}
+                >
+                  <option value="1">Every 1 minute</option>
+                  <option value="3">Every 3 minutes</option>
+                  <option value="5">Every 5 minutes (Recommended)</option>
+                  <option value="10">Every 10 minutes</option>
+                  <option value="30">Every 30 minutes</option>
+                  <option value="60">Every 1 hour</option>
+                </select>
+                <p className="text-xs text-gray-600 mt-3">
+                  How often we should check your website's availability.
                 </p>
               </div>
             </div>

@@ -106,6 +106,12 @@ export const Monitors = () => {
                   console.log(`Monitor clicked: ${monitor}`);
                   navigate(`/dashboard/monitor/${monitor.id}`);
                 };
+                
+                // Format check interval text
+                const checkIntervalText = monitor.checkInterval === 1 
+                  ? "1 minute ago" 
+                  : `${monitor.checkInterval || 5} minutes ago`;
+                
                 return (
                   <MonitorItem
                     key={key}
@@ -113,7 +119,7 @@ export const Monitors = () => {
                     url={monitor.url}
                     status={status}
                     uptime={isUp ? `Up for ${uptimeText}` : "Down"}
-                    lastChecked="5 minutes ago"
+                    lastChecked={checkIntervalText}
                     onClick={handleClick}
                     onDelete={() => handleDeleteClick(monitor.id, monitor.url)}
                   />

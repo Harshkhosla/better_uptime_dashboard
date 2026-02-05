@@ -135,6 +135,7 @@ model Website{
   alert  String?
   acknowledge       String?
   escalationPolicy  String?
+  checkInterval Int @default(5) // Check interval in minutes (default: 5 minutes)
   lastEmailSentAt DateTime? // Track last email sent time for rate limiting
   notificationPref  NotificationPreference? @relation(fields: [notificationPrefId], references: [id])
   notificationPrefId String?

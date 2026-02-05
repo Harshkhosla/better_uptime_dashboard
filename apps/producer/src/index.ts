@@ -1,13 +1,16 @@
 import { createClient } from "redis";
 import { Prismaclient } from "prisma/client";
 
-const INTERVAL_MS = 3 * 60 * 1000;
+const CHECK_FREQUENCY_MS = 1 * 60 * 1000; // Check every 1 minute to handle websites with different intervals
 const streamKey = "betterUptime:websites";
 const consumerGroups = {
   usa: ["usa-1", "usa-2"],
   india: ["india-1", "india-2"],
   africa: ["africa-1", "africa-2"],
 };
+
+// Track last check time for each website
+const lastCheckTimes = new Map<string, number>();
 
 async function processWebsites() {
   const client = createClient();
@@ -30,13 +33,25 @@ async function processWebsites() {
     }
   }
 
-  const urls = await Prismaclient.website.findMany();
-  for (const site of urls) {
-    const messageId = await client.XADD(streamKey, "*", {
-      url: site.url,
-      id: site.id.toString(),
-    });
-    console.log(`Message added: ${messageId} → ${site.url}`);
+  const websites = await Prismaclient.website.findMany();
+  const now = Date.now();
+  
+  for (const site of websites) {
+    const lastCheck = lastCheckTimes.get(site.id) || 0;
+    const checkIntervalMs = (site.checkInterval || 5) * 60 * 1000; // Convert minutes to milliseconds
+    
+    // Only add to stream if enough time has passed since last check
+    if (now - lastCheck >= checkIntervalMs) {
+      const messageId = await client.XADD(streamKey, "*", {
+        url: site.url,
+        id: site.id.toString(),
+      });
+      console.log(`✅ Message added: ${messageId} → ${site.url} (interval: ${site.checkInterval || 5} min)`);
+      lastCheckTimes.set(site.id, now);
+    } else {
+      const remainingTime = Math.ceil((checkIntervalMs - (now - lastCheck)) / 1000 / 60);
+      console.log(`⏭️  Skipping ${site.url} (next check in ${remainingTime} min)`);
+    }
   }
 
   await client.quit();
@@ -44,4 +59,4 @@ async function processWebsites() {
 
 processWebsites();
 
-setInterval(processWebsites, INTERVAL_MS);
+setInterval(processWebsites, CHECK_FREQUENCY_MS);
