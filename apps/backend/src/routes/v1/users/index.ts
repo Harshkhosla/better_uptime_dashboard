@@ -93,4 +93,29 @@ router.post("/login", async (req, res) => {
   return;
 });
 
+// Get all users endpoint
+router.get("/all", async (req, res) => {
+  try {
+    const users = await Prismaclient.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.status(200).json({
+      users,
+      count: users.length,
+    });
+  } catch (e) {
+    res.status(500).json({
+      message: "Failed to fetch users",
+    });
+  }
+});
+
 export const UserRouter = router;

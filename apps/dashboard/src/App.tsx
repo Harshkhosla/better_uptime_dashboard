@@ -13,6 +13,7 @@ import { DashboardLayout } from "./components/layout/DashboardLayout";
 import { Monitors } from "./components/dashboard/Monitors";
 import { MonitorDetail } from "./components/dashboard/MonitorDetail";
 import { Notifications } from "./components/dashboard/Notifications";
+import { Users } from "./components/dashboard/Users";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="createmonitor" element={<CreateMonitors />} />
           <Route path="monitor/:id" element={<MonitorDetail />} />
           <Route path="notifications" element={<Notifications />} />
+          <Route path="users" element={<Users />} />
         </Route>
         {/* Signup route - /signup */}
         <Route path="/signup" element={<Signup />} />

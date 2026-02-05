@@ -65,7 +65,7 @@ const defaultSidebarConfig: SidebarConfig = {
       href: "/dashboard/monitors",
       badge: null,
     },
-    { id: "users", label: "Users", icon: Users, href: "/dashboard/users", badge: "12" },
+    { id: "users", label: "Users", icon: Users, href: "/dashboard/users", badge: null },
     {
       id: "analytics",
       label: "Analytics",
@@ -85,7 +85,7 @@ const defaultSidebarConfig: SidebarConfig = {
       label: "Notifications",
       icon: Bell,
       href: "/dashboard/notifications",
-      badge: "3",
+      badge: null,
     },
     {
       id: "search",
@@ -158,6 +158,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(defaultCollapsed);
   const [notificationCount, setNotificationCount] = useState<number>(0);
+  const [userCount, setUserCount] = useState<number>(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -184,10 +185,31 @@ const Sidebar: React.FC<SidebarProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Update notification badge
+  // Fetch user count
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/v1/users/all");
+        const data = await response.json();
+        setUserCount(data.count || 0);
+      } catch (error) {
+        console.error("Failed to fetch user count:", error);
+      }
+    };
+
+    fetchUserCount();
+    // Refresh count every 30 seconds
+    const interval = setInterval(fetchUserCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update notification and user badges
   const navigationWithCount = config.navigation.map((item) => {
     if (item.id === "notifications") {
       return { ...item, badge: notificationCount > 0 ? notificationCount : null };
+    }
+    if (item.id === "users") {
+      return { ...item, badge: userCount > 0 ? userCount : null };
     }
     return item;
   });
@@ -204,6 +226,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   // Get active item based on current path
   const getActiveId = () => {
     if (location.pathname.includes("/dashboard/notifications")) return "notifications";
+    if (location.pathname.includes("/dashboard/users")) return "users";
     if (location.pathname.includes("/dashboard/monitor")) return "monitors";
     if (location.pathname === "/dashboard" || location.pathname === "/dashboard/monitors") return "monitors";
     return "monitors";
