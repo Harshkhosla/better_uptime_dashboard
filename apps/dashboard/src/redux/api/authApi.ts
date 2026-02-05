@@ -98,6 +98,13 @@ export const authApi = createApi({
       }),
       providesTags: ["Websites"],
     }),
+    deleteWebsite: builder.mutation<{ message: string; id: string }, string>({
+      query: (websiteId) => ({
+        url: `website/website/${websiteId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Websites"],
+    }),
   }),
 });
 
@@ -107,4 +114,5 @@ export const {
   useGetwebsitesQuery,
   useCreatemonitorMutation,
   useGetwebsitebyIdQuery,
+  useDeleteWebsiteMutation,
 } = authApi;

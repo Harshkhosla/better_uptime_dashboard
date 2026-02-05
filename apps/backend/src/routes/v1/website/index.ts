@@ -116,7 +116,17 @@ router.get("/website/all", authMiddleware, async (req, res) => {
       id: req?.UserID,
     },
     include: {
-      websites: true,
+      websites: {
+        include: {
+          websiteStatus: {
+            orderBy: {
+              timestamp: "desc",
+            },
+            take: 5, // Get last 5 status checks
+          },
+          notificationPref: true,
+        },
+      },
     },
   });
   res.status(200).json({
@@ -157,4 +167,69 @@ router.get("/status", authMiddleware, async (req, res) => {
   res.status(200).json(website);
   return;
 });
+
+// Delete website endpoint
+router.delete("/website/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  
+  if (!id) {
+    return res.status(400).json({
+      message: "Website ID is required",
+    });
+  }
+
+  try {
+    // Verify the website belongs to the user
+    const website = await Prismaclient.website.findFirst({
+      where: {
+        id: id,
+        // @ts-ignore
+        ownerId: req.UserID,
+      },
+    });
+
+    if (!website) {
+      return res.status(404).json({
+        message: "Website not found or you don't have permission to delete it",
+      });
+    }
+
+    // Delete related websiteStatus records first (cascade)
+    await Prismaclient.websiteStatus.deleteMany({
+      where: {
+        websiteId: id,
+      },
+    });
+
+    // Delete the website
+    await Prismaclient.website.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    // Optionally delete notification preferences if not shared
+    if (website.notificationPrefId) {
+      await Prismaclient.notificationPreference.delete({
+        where: {
+          id: website.notificationPrefId,
+        },
+      }).catch(() => {
+        // Ignore error if preference is used by other websites
+      });
+    }
+
+    res.status(200).json({
+      message: "Website deleted successfully",
+      id: id,
+    });
+  } catch (error) {
+    console.error("Error deleting website:", error);
+    res.status(500).json({
+      message: "Failed to delete website",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 export const WebsiteRouter = router;

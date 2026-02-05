@@ -3,6 +3,7 @@ import { UserRouter } from "./users";
 import { WebsiteRouter } from "./website";
 import { LlmRouter } from "./llm_response";
 import { WeightRouter } from "./weight";
+import { NotificationsRouter } from "./notifications";
 
 const router: Router = Router();
 
@@ -10,5 +11,6 @@ router.use("/users", UserRouter);
 router.use("/website", WebsiteRouter);
 router.use("/llm", LlmRouter);
 router.use("/weight", WeightRouter);
+router.use("/notifications", NotificationsRouter);
 
 export default router;

@@ -19,11 +19,19 @@ export const MonitorItem = ({
   uptime,
   lastChecked,
   onClick,
+  onDelete,
 }: any) => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent onClick from firing
+    if (onDelete) {
+      onDelete();
+    }
+  };
+
   return (
     <div
       onClick={onClick}
-      className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
+      className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors cursor-pointer"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -33,12 +41,36 @@ export const MonitorItem = ({
             <p className="text-gray-400 text-sm">{url}</p>
           </div>
         </div>
-        <div className="text-right">
-          <div className="flex items-center space-x-2 text-sm text-gray-400">
-            <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
-            <span>{lastChecked}</span>
+        <div className="flex items-center space-x-4">
+          <div className="text-right">
+            <div className="flex items-center space-x-2 text-sm text-gray-400">
+              <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
+              <span>{lastChecked}</span>
+            </div>
+            <p className="text-gray-300 text-sm mt-1">{uptime}</p>
           </div>
-          <p className="text-gray-300 text-sm mt-1">{uptime}</p>
+          {onDelete && (
+            <button
+              onClick={handleDelete}
+              className="text-gray-500 hover:text-red-500 transition-colors p-2"
+              title="Delete monitor"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
     </div>

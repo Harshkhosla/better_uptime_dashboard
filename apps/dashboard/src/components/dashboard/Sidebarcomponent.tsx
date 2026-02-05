@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Home,
   Users,
@@ -13,6 +13,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // Type definitions
 interface NavigationItem {
@@ -54,43 +55,43 @@ const defaultSidebarConfig: SidebarConfig = {
   logo: {
     text: "Dashboard",
     icon: Home,
-    href: "/",
+    href: "/dashboard",
   },
   navigation: [
     {
-      id: "Monitors",
+      id: "monitors",
       label: "Monitors",
       icon: Home,
-      href: "/dashboard",
+      href: "/dashboard/monitors",
       badge: null,
     },
-    { id: "users", label: "Users", icon: Users, href: "/users", badge: "12" },
+    { id: "users", label: "Users", icon: Users, href: "/dashboard/users", badge: "12" },
     {
       id: "analytics",
       label: "Analytics",
       icon: BarChart3,
-      href: "/analytics",
+      href: "/dashboard/analytics",
       badge: null,
     },
     {
       id: "documents",
       label: "Documents",
       icon: FileText,
-      href: "/documents",
+      href: "/dashboard/documents",
       badge: null,
     },
     {
       id: "notifications",
       label: "Notifications",
       icon: Bell,
-      href: "/notifications",
+      href: "/dashboard/notifications",
       badge: "3",
     },
     {
       id: "search",
       label: "Search",
       icon: Search,
-      href: "/search",
+      href: "/dashboard/search",
       badge: null,
     },
   ],
@@ -156,15 +157,56 @@ const Sidebar: React.FC<SidebarProps> = ({
   variant = "default",
 }) => {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(defaultCollapsed);
-  const [activeItem, setActiveItem] = useState<string>("home");
+  const [notificationCount, setNotificationCount] = useState<number>(0);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Fetch notification count
+  useEffect(() => {
+    const fetchNotificationCount = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch("http://localhost:4000/api/v1/notifications/count", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        setNotificationCount(data.count || 0);
+      } catch (error) {
+        console.error("Failed to fetch notification count:", error);
+      }
+    };
+
+    fetchNotificationCount();
+    // Refresh count every 30 seconds
+    const interval = setInterval(fetchNotificationCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update notification badge
+  const navigationWithCount = config.navigation.map((item) => {
+    if (item.id === "notifications") {
+      return { ...item, badge: notificationCount > 0 ? notificationCount : null };
+    }
+    return item;
+  });
 
   const handleItemClick = (item: NavigationItem): void => {
-    setActiveItem(item.id);
+    navigate(item.href);
     onNavigate(item);
   };
 
   const toggleSidebar = (): void => {
     setIsCollapsed(!isCollapsed);
+  };
+
+  // Get active item based on current path
+  const getActiveId = () => {
+    if (location.pathname.includes("/dashboard/notifications")) return "notifications";
+    if (location.pathname.includes("/dashboard/monitor")) return "monitors";
+    if (location.pathname === "/dashboard" || location.pathname === "/dashboard/monitors") return "monitors";
+    return "monitors";
   };
 
   const sidebarVariants: Record<string, string> = {
@@ -214,11 +256,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {config.navigation.map((item) => (
+        {navigationWithCount.map((item) => (
           <div key={item.id} className="relative">
             <SidebarItem
               item={item}
-              isActive={activeItem === item.id}
+              isActive={getActiveId() === item.id}
               isCollapsed={isCollapsed}
               onItemClick={handleItemClick}
             />
@@ -233,7 +275,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div key={item.id} className="relative">
               <SidebarItem
                 item={item}
-                isActive={activeItem === item.id}
+                isActive={getActiveId() === item.id}
                 isCollapsed={isCollapsed}
                 onItemClick={handleItemClick}
               />

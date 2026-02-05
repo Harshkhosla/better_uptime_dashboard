@@ -82,7 +82,7 @@ async function processBulkStream(
 }
 
 async function triggerAction(websitedata: any, url: string) {
-  console.log(websitedata.ownerId, "cdkjnkjdvnskvndsjnvnsskdndskjvnsdvkndsv");
+  console.log(`🔔 Triggering email notification for website: ${url}`);
 
   const userdata = await Prismaclient.user.findFirst({
     where: {
@@ -90,26 +90,82 @@ async function triggerAction(websitedata: any, url: string) {
     },
   });
 
+  if (!userdata?.email) {
+    console.log("⚠️ No user email found, skipping notification");
+    return;
+  }
+
+  // Check if email notifications are enabled for this website
+  const website = await Prismaclient.website.findFirst({
+    where: {
+      id: websitedata.id,
+    },
+    include: {
+      notificationPref: true,
+    },
+  });
+
+  if (website?.notificationPref && !website.notificationPref.notifyEmail) {
+    console.log("📧 Email notifications disabled for this website");
+    return;
+  }
+
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
       user: "Harshkhosla9945@gmail.com",
-      pass: "smos vryu mccy rhqp",
+      pass: "iqby twxq smrt jxtp",
     },
   });
 
   const mailOptions = {
     from: `"Uptime Monitor" <Harshkhosla9945@gmail.com>`,
-    to: userdata?.email,
-    subject: `🚨 Alert: Your website is DOWN`,
+    to: userdata.email,
+    subject: `🚨 Alert: Your website ${url} is DOWN`,
     html: `
-      <h3>Website Down Alert</h3>
-      <p>Your website <b>${url}</b> is currently <span style="color: red;">DOWN</span>.</p>
-      <p>Please investigate immediately.</p>
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background-color: #dc2626; color: white; padding: 20px; border-radius: 5px; }
+            .content { background-color: #f9fafb; padding: 20px; margin-top: 20px; border-radius: 5px; }
+            .footer { margin-top: 20px; font-size: 12px; color: #6b7280; }
+            .status { font-weight: bold; color: #dc2626; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h2>🚨 Website Down Alert</h2>
+            </div>
+            <div class="content">
+              <p>Hello ${userdata.name || "User"},</p>
+              <p>Your monitored website is currently experiencing downtime:</p>
+              <p><strong>URL:</strong> <a href="${url}">${url}</a></p>
+              <p><strong>Status:</strong> <span class="status">DOWN</span></p>
+              <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+              <p><strong>Total Incidents:</strong> ${websitedata.incident || 0}</p>
+              <hr>
+              <p>Please investigate immediately to restore service.</p>
+            </div>
+            <div class="footer">
+              <p>This is an automated notification from Better Uptime Dashboard.</p>
+              <p>You're receiving this because you have email notifications enabled for this website.</p>
+            </div>
+          </div>
+        </body>
+      </html>
     `,
   };
-  console.log(userdata, "cdkjnkjdvnskvndsjnvnsskdndskjvnsdvkndsv");
-  await transporter.sendMail(mailOptions);
+  
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Email notification sent to ${userdata.email}`);
+  } catch (error) {
+    console.error(`❌ Failed to send email notification:`, error);
+  }
 }
 
 async function processErrorStream(
@@ -175,7 +231,7 @@ async function processErrorStream(
             alert: "ALERT",
           },
         });
-        // await triggerAction (websiteadata,websiteadata.url)
+        // await triggerAction(websiteadata, websiteadata.url); // Disabled until email is configured
         const created = await Prismaclient.websiteStatus.create({
           data: {
             regionId: region.id,
@@ -223,4 +279,4 @@ async function main() {
   }
 }
 
-// main();
+main();
