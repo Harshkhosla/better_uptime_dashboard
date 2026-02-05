@@ -37,6 +37,7 @@ async function processBulkStream(
           select: {
             id: true,
             uptime: true,
+            url: true,
           },
         });
 
@@ -55,12 +56,17 @@ async function processBulkStream(
         }
 
         // Set uptime if this is the first time website is UP (uptime is null)
-        if (!website.uptime) {
+        // This means the website just recovered from being DOWN
+        const wasDown = !website.uptime;
+        if (wasDown) {
           await Prismaclient.website.update({
             where: { id: message.message.id },
             data: { uptime: new Date() },
           });
           console.log(`🟢 Website came UP, uptime started: ${message.message.url}`);
+          
+          // Send recovery email notification
+          await triggerRecoveryEmail(message.message.id, message.message.url || website.url);
         }
 
         let duration = Number.isFinite(Number(message.message.duration))
@@ -194,6 +200,85 @@ async function triggerAction(websitedata: any, url: string) {
     console.log(`📝 Updated lastEmailSentAt for website: ${url}`);
   } catch (error) {
     console.error(`❌ Failed to send email notification:`, error);
+  }
+}
+
+async function triggerRecoveryEmail(websiteId: string, url: string) {
+  console.log(`🟢 Triggering recovery email notification for website: ${url}`);
+
+  const website = await Prismaclient.website.findFirst({
+    where: { id: websiteId },
+    include: {
+      notificationPref: true,
+      owner: true,
+    },
+  });
+
+  if (!website?.owner?.email) {
+    console.log("⚠️ No user email found, skipping notification");
+    return;
+  }
+
+  if (website?.notificationPref && !website.notificationPref.notifyEmail) {
+    console.log("📧 Email notifications disabled for this website");
+    return;
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "Harshkhosla9945@gmail.com",
+      pass: "iqby twxq smrt jxtp",
+    },
+  });
+
+  const mailOptions = {
+    from: `"Uptime Monitor" <Harshkhosla9945@gmail.com>`,
+    to: website.owner.email,
+    subject: `✅ Good News: Your website ${url} is back UP`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background-color: #16a34a; color: white; padding: 20px; border-radius: 5px; }
+            .content { background-color: #f0fdf4; padding: 20px; margin-top: 20px; border-radius: 5px; border: 1px solid #86efac; }
+            .footer { margin-top: 20px; font-size: 12px; color: #6b7280; }
+            .status { font-weight: bold; color: #16a34a; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h2>✅ Website Recovered</h2>
+            </div>
+            <div class="content">
+              <p>Hello ${website.owner.name || "User"},</p>
+              <p>Great news! Your website is back online and responding normally:</p>
+              <p><strong>URL:</strong> <a href="${url}">${url}</a></p>
+              <p><strong>Status:</strong> <span class="status">UP</span></p>
+              <p><strong>Recovered at:</strong> ${new Date().toLocaleString()}</p>
+              <p><strong>Total Incidents:</strong> ${website.incident || 0}</p>
+              <hr>
+              <p>Your website is now operational. Monitoring continues as usual.</p>
+            </div>
+            <div class="footer">
+              <p>This is an automated notification from Better Uptime Dashboard.</p>
+              <p>You're receiving this because you have email notifications enabled for this website.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  };
+  
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Recovery email sent to ${website.owner.email}`);
+  } catch (error) {
+    console.error(`❌ Failed to send recovery email:`, error);
   }
 }
 

@@ -14,6 +14,9 @@ import { Monitors } from "./components/dashboard/Monitors";
 import { MonitorDetail } from "./components/dashboard/MonitorDetail";
 import { Notifications } from "./components/dashboard/Notifications";
 import { Users } from "./components/dashboard/Users";
+import { Analytics } from "./components/dashboard/Analytics";
+import { Documents } from "./components/dashboard/Documents";
+import { Settings } from "./components/dashboard/Settings";
 
 function App() {
   return (
@@ -39,6 +42,9 @@ function App() {
           <Route path="monitor/:id" element={<MonitorDetail />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="users" element={<Users />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="documents" element={<Documents />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
         {/* Signup route - /signup */}
         <Route path="/signup" element={<Signup />} />
