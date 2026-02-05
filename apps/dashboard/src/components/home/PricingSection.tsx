@@ -14,7 +14,7 @@ function PricingSection() {
       isHighlighted: false,
     },
     {
-      title: "Better Stack",
+      title: "Better Uptime",
       price: "$879",
       period: "per month",
       features: [
@@ -29,10 +29,10 @@ function PricingSection() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
       <div className="text-center mb-16">
-        <h2 className="text-4xl font-bold text-white mb-6">
+        <h2 className="text-4xl font-bold text-gray-900 mb-6">
           At a fraction of your current costs
         </h2>
-        <p className="text-xl text-dark-300 max-w-3xl mx-auto">
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
           Get an unrivaled price-to-performance ratio. Decrease your budget by
           30x or keep your current budget but actually instrument all of your
           services, without sampling.

@@ -15,11 +15,11 @@ export const Button: React.FC<{
 }) => {
   const variants = {
     primary:
-      "bg-purple-600 hover:bg-purple-700 text-white hover:cursor-pointer",
+      "bg-black hover:bg-yellow-600 text-white hover:cursor-pointer transition-all duration-200",
     terteary:
-      "bg-purple-600 hover:bg-purple-700 text-white hover:cursor-pointer px-4",
+      "bg-black hover:bg-yellow-600 text-white hover:cursor-pointer px-4 transition-all duration-200",
     secondary: "bg-gray-700 hover:bg-gray-600 text-white",
-    ghost: "hover:bg-gray-800 text-gray-300 hover:text-white",
+    ghost: "hover:bg-gray-100 text-gray-700 hover:text-gray-900",
   };
 
   const sizes = {

@@ -12,16 +12,16 @@ function HeroSection() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
       <div className="text-center">
         {/* Main Headline */}
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+        <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
           See everything.
           <br />
-          <span className="bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
             Fix anything.
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-xl md:text-2xl text-dark-300 mb-12 max-w-4xl mx-auto leading-relaxed">
+        <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
           AI-native platform for on-call and incident response with effortless
           monitoring, status pages, tracing, infrastructure monitoring and log
           management.
@@ -38,11 +38,11 @@ function HeroSection() {
               placeholder="Your work e-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-white placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
             />
             <button
               type="submit"
-              className="bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 whitespace-nowrap"
+              className="bg-black hover:bg-yellow-600 text-white font-medium px-6 py-3 rounded-lg transition-all duration-200 whitespace-nowrap"
             >
               Start for free
             </button>
@@ -50,11 +50,11 @@ function HeroSection() {
         </div>
 
         {/* Enterprise Link */}
-        <p className="text-dark-400">
+        <p className="text-gray-600">
           Looking for an enterprise solution?{" "}
           <a
             href="#"
-            className="text-primary-400 hover:text-primary-300 transition-colors"
+            className="text-yellow-600 hover:text-yellow-700 transition-colors"
           >
             Book a demo
           </a>

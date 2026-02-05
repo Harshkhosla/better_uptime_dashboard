@@ -31,28 +31,28 @@ export const MonitorItem = ({
   return (
     <div
       onClick={onClick}
-      className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors cursor-pointer"
+      className="bg-white rounded-lg p-4 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all cursor-pointer"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <StatusIndicator status={status} />
           <div>
-            <h3 className="text-white font-medium">{name}</h3>
-            <p className="text-gray-400 text-sm">{url}</p>
+            <h3 className="text-gray-900 font-medium">{name}</h3>
+            <p className="text-gray-600 text-sm">{url}</p>
           </div>
         </div>
         <div className="flex items-center space-x-4">
           <div className="text-right">
-            <div className="flex items-center space-x-2 text-sm text-gray-400">
-              <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
+            <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
               <span>{lastChecked}</span>
             </div>
-            <p className="text-gray-300 text-sm mt-1">{uptime}</p>
+            <p className="text-gray-700 text-sm mt-1">{uptime}</p>
           </div>
           {onDelete && (
             <button
               onClick={handleDelete}
-              className="text-gray-500 hover:text-red-500 transition-colors p-2"
+              className="text-gray-400 hover:text-red-600 transition-colors p-2"
               title="Delete monitor"
             >
               <svg

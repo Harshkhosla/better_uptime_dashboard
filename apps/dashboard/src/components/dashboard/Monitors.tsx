@@ -47,7 +47,7 @@ export const Monitors = () => {
   };
 
   return (
-    <div className="h-screen overflow-y-auto bg-[#0d1117]">
+    <div className="h-screen overflow-y-auto bg-white">
       <div className="max-w-7xl mx-auto mt-10 px-10 sm:px-6 lg:px-8 py-8">
         <DashBoardHeader
           children={"Monitors"}
@@ -58,12 +58,12 @@ export const Monitors = () => {
         <div className="mt-10">
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
-              <p className="text-gray-400 mt-4">Loading monitors...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto"></div>
+              <p className="text-gray-600 mt-4">Loading monitors...</p>
             </div>
           ) : monitors?.length === 0 ? (
             <div>
-              <h3 className="text-lg font-medium text-gray-300 mb-2">
+              <h3 className="text-lg font-medium text-gray-800 mb-2">
                 No monitors yet
               </h3>
               <p className="text-gray-500 mb-6">
@@ -72,7 +72,7 @@ export const Monitors = () => {
               </p>
               <Button
                 variant="primary"
-                className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                className="bg-black hover:bg-yellow-600 text-white border-0"
               >
                 Create Your First Monitor
               </Button>
@@ -126,22 +126,22 @@ export const Monitors = () => {
         {/* Delete Confirmation Modal */}
         {deleteConfirm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-[#161b22] border border-gray-700 rounded-lg p-6 max-w-md w-full mx-4">
-              <h3 className="text-xl font-semibold text-white mb-4">Delete Monitor</h3>
-              <p className="text-gray-300 mb-6">
+            <div className="bg-white border border-gray-300 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Delete Monitor</h3>
+              <p className="text-gray-700 mb-6">
                 Are you sure you want to delete monitoring for <span className="font-semibold">{deleteConfirm.url}</span>? 
                 This action cannot be undone and will remove all historical data.
               </p>
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={() => setDeleteConfirm(null)}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  className="px-4 py-2 bg-gray-200 text-gray-800 hover:bg-gray-300 rounded transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteConfirm}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
+                  className="px-4 py-2 bg-black hover:bg-yellow-600 text-white rounded transition-all duration-200"
                 >
                   Delete
                 </button>

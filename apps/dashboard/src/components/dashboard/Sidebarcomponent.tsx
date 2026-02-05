@@ -121,8 +121,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative
         ${
           isActive
-            ? "bg-purple-600 text-white shadow-lg shadow-purple-600/25"
-            : "text-gray-300 hover:bg-gray-800 hover:text-white"
+            ? "bg-black text-white shadow-lg shadow-black/25 hover:bg-yellow-600"
+            : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
         }
         ${isCollapsed ? "justify-center" : "justify-start"}
       `}
@@ -210,10 +210,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const sidebarVariants: Record<string, string> = {
-    default: "bg-gray-900 border-r border-gray-800",
+    default: "bg-white border-r border-gray-200",
     floating:
-      "bg-gray-900/95 backdrop-blur-sm rounded-r-2xl border border-gray-800/50 shadow-2xl",
-    bordered: "bg-gray-900 border-2 border-purple-500/20 rounded-r-xl",
+      "bg-white/95 backdrop-blur-sm rounded-r-2xl border border-gray-200/50 shadow-2xl",
+    bordered: "bg-white border-2 border-gray-200 rounded-r-xl",
   };
 
   const LogoIcon = config.logo.icon;
@@ -228,20 +228,20 @@ const Sidebar: React.FC<SidebarProps> = ({
       `}
     >
       {/* Header */}
-      <div className="p-4 border-b border-gray-800">
+      <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div className="flex items-center gap-2">
-              <LogoIcon size={24} className="text-purple-500" />
-              <h1 className="font-bold text-lg">{config.logo.text}</h1>
+              <LogoIcon size={24} className="text-yellow-600" />
+              <h1 className="font-bold text-lg text-gray-900">{config.logo.text}</h1>
             </div>
           )}
           {isCollapsed && (
-            <LogoIcon size={24} className="text-purple-500 mx-auto" />
+            <LogoIcon size={24} className="text-yellow-600 mx-auto" />
           )}
           <button
             onClick={toggleSidebar}
-            className="p-1 rounded-md hover:bg-gray-800 transition-colors"
+            className="p-1 rounded-md hover:bg-gray-100 transition-colors text-gray-600"
             type="button"
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
@@ -270,7 +270,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Footer */}
       {config.footer && config.footer.length > 0 && (
-        <div className="p-3 border-t border-gray-800 space-y-1">
+        <div className="p-3 border-t border-gray-200 space-y-1">
           {config.footer.map((item) => (
             <div key={item.id} className="relative">
               <SidebarItem

@@ -75,7 +75,7 @@ export const MonitorDetail = () => {
   }
   
   return (
-    <div className="h-screen overflow-y-auto bg-[#0d1117]">
+    <div className="h-screen overflow-y-auto bg-white">
       <div className="max-w-7xl mx-auto mt-10 px-10 sm:px-6 lg:px-8 py-8">
         {/* Status Header */}
         <div className="flex items-center space-x-4 pb-16">
@@ -85,22 +85,22 @@ export const MonitorDetail = () => {
           <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse" />
         )}
         <div>
-          <h1 className="text-2xl font-semibold">{websiteData?.url}</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">{websiteData?.url}</h1>
           <p
-            className={`${isUp ? "text-green-400" : "text-red-500"} text-sm`}
+            className={`${isUp ? "text-green-600" : "text-red-600"} text-sm font-medium`}
           >
             {isUp ? "Up" : "Down"} · Checked every 5
             minutes
           </p>
         </div>
-        <div className="ml-auto flex items-center space-x-4 text-sm mt-14 text-gray-400">
-          <button className="hover:underline">Send test alert</button>
-          <button className="hover:underline">Incidents</button>
-          <button className="hover:underline">Pause</button>
-          <button className="hover:underline">Configure</button>
+        <div className="ml-auto flex items-center space-x-4 text-sm mt-14 text-gray-600">
+          <button className="hover:underline hover:text-gray-900">Send test alert</button>
+          <button className="hover:underline hover:text-gray-900">Incidents</button>
+          <button className="hover:underline hover:text-gray-900">Pause</button>
+          <button className="hover:underline hover:text-gray-900">Configure</button>
           <button 
             onClick={() => setShowDeleteConfirm(true)}
-            className="hover:underline text-red-500 hover:text-red-400"
+            className="hover:underline text-red-600 hover:text-red-700"
           >
             Delete
           </button>
@@ -110,9 +110,9 @@ export const MonitorDetail = () => {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#161b22] border border-gray-700 rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-xl font-semibold text-white mb-4">Delete Monitor</h3>
-            <p className="text-gray-300 mb-6">
+          <div className="bg-white border border-gray-300 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Delete Monitor</h3>
+            <p className="text-gray-700 mb-6">
               Are you sure you want to delete monitoring for <span className="font-semibold">{websiteData?.url}</span>? 
               This action cannot be undone and will remove all historical data.
             </p>
@@ -138,17 +138,17 @@ export const MonitorDetail = () => {
 
       {/* Status Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-[#161b22] p-4 rounded-lg border border-gray-700">
-          <p className="text-sm text-gray-400">{isUp ? "Currently up for" : "Status"}</p>
-          <p className={`text-xl font-bold ${isUp ? "text-green-400" : "text-red-500"}`}>{uptime}</p>
+        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+          <p className="text-sm text-gray-600">{isUp ? "Currently up for" : "Status"}</p>
+          <p className={`text-xl font-bold ${isUp ? "text-green-600" : "text-red-600"}`}>{uptime}</p>
         </div>
-        <div className="bg-[#161b22] p-4 rounded-lg border border-gray-700">
-          <p className="text-sm text-gray-400">Last checked at</p>
-          <p className="text-xl font-bold">5 minutes ago</p>
+        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+          <p className="text-sm text-gray-600">Last checked at</p>
+          <p className="text-xl font-bold text-gray-900">5 minutes ago</p>
         </div>
-        <div className="bg-[#161b22] p-4 rounded-lg border border-gray-700">
-          <p className="text-sm text-gray-400">Incidents</p>
-          <p className="text-xl font-bold">{websiteData?.incident}</p>
+        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+          <p className="text-sm text-gray-600">Incidents</p>
+          <p className="text-xl font-bold text-gray-900">{websiteData?.incident}</p>
         </div>
       </div>
       <ResponseTimeChart websitedata={websiteData?.websiteStatus} />
