@@ -36,6 +36,7 @@ async function processBulkStream(
           },
           select: {
             id: true,
+            uptime: true,
           },
         });
 
@@ -51,6 +52,15 @@ async function processBulkStream(
             `⚠️ Region with name ${message.message.origin} not found, skipping...`,
           );
           continue;
+        }
+
+        // Set uptime if this is the first time website is UP (uptime is null)
+        if (!website.uptime) {
+          await Prismaclient.website.update({
+            where: { id: message.message.id },
+            data: { uptime: new Date() },
+          });
+          console.log(`🟢 Website came UP, uptime started: ${message.message.url}`);
         }
 
         let duration = Number.isFinite(Number(message.message.duration))
@@ -110,6 +120,18 @@ async function triggerAction(websitedata: any, url: string) {
     return;
   }
 
+  // Rate limiting: Check if last email was sent less than 5 minutes ago
+  if (website?.lastEmailSentAt) {
+    const timeSinceLastEmail = Date.now() - website.lastEmailSentAt.getTime();
+    const fiveMinutesInMs = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+    if (timeSinceLastEmail < fiveMinutesInMs) {
+      const remainingTime = Math.ceil((fiveMinutesInMs - timeSinceLastEmail) / 1000 / 60);
+      console.log(`⏳ Rate limit: Last email sent ${Math.floor(timeSinceLastEmail / 1000 / 60)} minutes ago. Next email in ${remainingTime} minutes.`);
+      return;
+    }
+  }
+
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -163,6 +185,13 @@ async function triggerAction(websitedata: any, url: string) {
   try {
     await transporter.sendMail(mailOptions);
     console.log(`✅ Email notification sent to ${userdata.email}`);
+    
+    // Update lastEmailSentAt timestamp
+    await Prismaclient.website.update({
+      where: { id: websitedata.id },
+      data: { lastEmailSentAt: new Date() },
+    });
+    console.log(`📝 Updated lastEmailSentAt for website: ${url}`);
   } catch (error) {
     console.error(`❌ Failed to send email notification:`, error);
   }
@@ -172,16 +201,23 @@ async function processErrorStream(
   client: ReturnType<typeof createClient>,
   lastErrorId: string,
 ) {
+  console.log(`🔍 Checking error stream from ID: ${lastErrorId}`);
+  
   const errorStreamData = await client.xRead(
     [{ key: streamErrorKey, id: lastErrorId }],
     { COUNT: 100, BLOCK: 5000 },
   );
 
   if (Array.isArray(errorStreamData)) {
+    // @ts-ignore - Redis stream type complexity
+    const messageCount = errorStreamData[0]?.messages?.length || 0;
+    console.log(`📨 Found ${messageCount} error messages`);
     for (const stream of errorStreamData) {
       // @ts-ignore
       for (const message of stream.messages) {
         lastErrorId = message.id;
+        console.log(`🚨 Processing error for: ${message.message.url} (ID: ${message.message.id})`);
+        
         const region = await Prismaclient.region.findFirst({
           where: {
             name: message.message.origin,
@@ -221,17 +257,21 @@ async function processErrorStream(
           ? message.message.duration
           : 0;
 
+        // When website goes DOWN, clear uptime (reset uptime counter)
         const websiteadata = await Prismaclient.website.update({
           where: {
             id: message?.message?.id,
           },
           data: {
-            uptime: new Date(),
+            uptime: null, // Reset uptime when website goes DOWN
             incident: { increment: 1 },
             alert: "ALERT",
           },
         });
-        // await triggerAction(websiteadata, websiteadata.url); // Disabled until email is configured
+        console.log(`🔴 Website went DOWN, uptime reset: ${websiteadata.url}`);
+        
+        console.log(`📧 Sending email for: ${websiteadata.url}`);
+        await triggerAction(websiteadata, websiteadata.url);
         const created = await Prismaclient.websiteStatus.create({
           data: {
             regionId: region.id,

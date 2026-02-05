@@ -110,23 +110,19 @@ router.post("/website", authMiddleware, async (req, res) => {
 });
 
 router.get("/website/all", authMiddleware, async (req, res) => {
-  const websites = await Prismaclient.user.findMany({
+  const websites = await Prismaclient.website.findMany({
     where: {
       // @ts-ignore
-      id: req?.UserID,
+      ownerId: req?.UserID,
     },
     include: {
-      websites: {
-        include: {
-          websiteStatus: {
-            orderBy: {
-              timestamp: "desc",
-            },
-            take: 5, // Get last 5 status checks
-          },
-          notificationPref: true,
+      websiteStatus: {
+        orderBy: {
+          timestamp: "desc",
         },
+        take: 5, // Get last 5 status checks
       },
+      notificationPref: true,
     },
   });
   res.status(200).json({

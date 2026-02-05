@@ -3,28 +3,20 @@ import { DashBoardHeader } from "@repo/ui/DashboardHeader";
 import { MonitorItem } from "./MonitorItem";
 import { useNavigate } from "react-router-dom";
 import { useGetwebsitesQuery, useDeleteWebsiteMutation } from "../../redux/api/authApi";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { useEffect, useState } from "react";
-import { setWebsites } from "../../redux/slice/webSlice";
+import { useState } from "react";
 
 export const Monitors = () => {
-  const { websites: monitors } = useAppSelector((state) => state.website);
-  console.log(monitors, "monitorsmonitors");
-
-  const { data: websitesData, isLoading, error } = useGetwebsitesQuery();
+  const { data: websitesData, isLoading, error, refetch } = useGetwebsitesQuery();
   const [deleteWebsite] = useDeleteWebsiteMutation();
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; url: string } | null>(null);
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    // @ts-ignore
-    if (websitesData?.websites?.[0]?.websites) {
-      // @ts-ignore
-      const fetchedMonitors = websitesData.websites[0].websites;
-      dispatch(setWebsites({ websites: fetchedMonitors }));
-    }
-  }, [websitesData, dispatch]);
+  // Get monitors directly from the query data
+  const monitors = websitesData?.websites || [];
+  
+  console.log("Monitors data:", monitors);
+  console.log("Loading:", isLoading);
+  console.log("Error:", error);
 
   function handlenavigate() {
     navigate("/dashboard/createmonitor");
@@ -40,6 +32,7 @@ export const Monitors = () => {
     try {
       await deleteWebsite(deleteConfirm.id).unwrap();
       setDeleteConfirm(null);
+      refetch(); // Refresh the list
     } catch (error) {
       console.error("Failed to delete website:", error);
       alert("Failed to delete website. Please try again.");
@@ -56,12 +49,18 @@ export const Monitors = () => {
           className="py-2"
         />
         <div className="mt-10">
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+              <p className="text-red-800">Error loading monitors. Please try refreshing the page.</p>
+            </div>
+          )}
+          
           {isLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto"></div>
               <p className="text-gray-600 mt-4">Loading monitors...</p>
             </div>
-          ) : monitors?.length === 0 ? (
+          ) : !monitors || monitors.length === 0 ? (
             <div>
               <h3 className="text-lg font-medium text-gray-800 mb-2">
                 No monitors yet
@@ -73,6 +72,7 @@ export const Monitors = () => {
               <Button
                 variant="primary"
                 className="bg-black hover:bg-yellow-600 text-white border-0"
+                onClick={handlenavigate}
               >
                 Create Your First Monitor
               </Button>
