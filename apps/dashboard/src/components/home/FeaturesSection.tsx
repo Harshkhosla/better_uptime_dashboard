@@ -1,8 +1,15 @@
-import { BarChart3, Users, Globe, Shield, Zap, Settings } from "lucide-react";
+import { BarChart3, Users, Globe, Shield, Zap, Settings, Brain, TrendingUp } from "lucide-react";
 import FeatureCard from "./FeatureCard";
 
 function FeaturesSection() {
   const features = [
+    {
+      title: "AI Auto-Resolution",
+      description:
+        "AI agent automatically diagnoses and fixes issues. Self-healing infrastructure with 95% auto-resolution rate.",
+      icon: <Brain className="w-4 h-4" />,
+      iconText: "Resolves incidents in under 2 minutes",
+    },
     {
       title: "Tracing",
       description:
@@ -45,13 +52,34 @@ function FeaturesSection() {
       icon: <Settings className="w-4 h-4" />,
       iconText: "Translated into any language",
     },
+    {
+      title: "Cost Optimization",
+      description:
+        "AI-powered resource allocation reduces infrastructure costs by up to 70% while maintaining peak performance.",
+      icon: <TrendingUp className="w-4 h-4" />,
+      iconText: "Pay only for what you use with auto-scaling",
+    },
   ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 relative">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-white via-gray-50 to-white -z-10"></div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      {/* Section Header */}
+      <div className="text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Everything you need to{" "}
+          <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+            monitor and maintain
+          </span>
+        </h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          Comprehensive monitoring suite powered by AI to keep your services running flawlessly
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {features.map((feature, index) => (
           <FeatureCard
             key={index}

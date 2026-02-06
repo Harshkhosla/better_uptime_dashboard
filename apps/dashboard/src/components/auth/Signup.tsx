@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignupMutation } from "../../redux/api/authApi";
-import { useAppDispatch } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setCredentials } from "../../redux/slice/authSlice";
 
 function Signup() {
@@ -11,6 +11,14 @@ function Signup() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [signup] = useSignupMutation();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -11,6 +11,12 @@ function HeroSection() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
       <div className="text-center">
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
+          <span>🤖</span>
+          <span>AI-Powered • Zero Downtime • 70% Cost Savings</span>
+        </div>
+
         {/* Main Headline */}
         <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
           See everything.
@@ -21,11 +27,27 @@ function HeroSection() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+        <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
           AI-native platform for on-call and incident response with effortless
           monitoring, status pages, tracing, infrastructure monitoring and log
           management.
         </p>
+
+        {/* Key Value Props */}
+        <div className="flex flex-wrap justify-center gap-6 mb-12 text-sm md:text-base">
+          <div className="flex items-center gap-2 text-gray-700">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span className="font-medium">99.99% Uptime SLA</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-700">
+            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+            <span className="font-medium">AI Auto-Resolution</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-700">
+            <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+            <span className="font-medium">Up to 70% Cost Reduction</span>
+          </div>
+        </div>
 
         {/* CTA Section */}
         <div className="max-w-md mx-auto mb-8">

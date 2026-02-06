@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { logout } from "../../redux/slice/authSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 interface HeaderProps {
   onNavigateToLogin: () => void;
@@ -12,7 +12,26 @@ interface HeaderProps {
 function Header({ onNavigateToLogin, onNavigateToSignup }: HeaderProps) {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const scrollToSection = (sectionId: string) => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
   return (
     <header className="relative z-10 border-b border-gray-200 bg-white">
@@ -34,19 +53,19 @@ function Header({ onNavigateToLogin, onNavigateToSignup }: HeaderProps) {
             >
               Dashboard
             </Link>
-            <div className="flex items-center space-x-1 cursor-pointer group">
-              <span className="text-gray-600 group-hover:text-gray-900 transition-colors">
-                Home
-              </span>
-              <ChevronDown className="w-4 h-4 text-gray-600 group-hover:text-gray-900 transition-colors" />
-            </div>
+            <button
+              onClick={() => scrollToSection('features')}
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Features
+            </button>
 
-            <a
-              href="#"
+            <button
+              onClick={() => scrollToSection('pricing')}
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Pricing
-            </a>
+            </button>
             <div className="flex items-center space-x-1 cursor-pointer group">
               <span className="text-gray-600 group-hover:text-gray-900 transition-colors">
                 Community

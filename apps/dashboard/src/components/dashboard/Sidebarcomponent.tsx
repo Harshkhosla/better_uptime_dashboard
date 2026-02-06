@@ -11,6 +11,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  ArrowLeft,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -250,10 +251,26 @@ const Sidebar: React.FC<SidebarProps> = ({
         ${className}
       `}
     >
+      {/* Back to Home Button */}
+      <div className="p-3 border-b border-gray-200">
+        <button
+          onClick={() => navigate('/')}
+          className={`
+            w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
+            text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 border border-gray-200
+            ${isCollapsed ? "justify-center" : "justify-start"}
+          `}
+          title={isCollapsed ? "Back to Home" : undefined}
+          type="button"
+        >
+          <ArrowLeft size={20} className="flex-shrink-0" />
+          {!isCollapsed && <span className="font-medium">Back to Home</span>}
+        </button>
+      </div>
+
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          {!isCollapsed && (
+        <div className="flex items-center justify-between">{!isCollapsed && (
             <div className="flex items-center gap-2">
               <LogoIcon size={24} className="text-yellow-600" />
               <h1 className="font-bold text-lg text-gray-900">{config.logo.text}</h1>

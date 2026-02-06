@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../redux/api/authApi";
-import { useAppDispatch } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setCredentials } from "../../redux/slice/authSlice";
 import { Input } from "@repo/ui/Input";
 import { Button } from "@repo/ui/button";
@@ -13,6 +13,14 @@ function Login() {
   const navigate = useNavigate();
   const [login] = useLoginMutation();
   const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +41,7 @@ function Login() {
         }),
       );
 
-      navigate("/home");
+      navigate("/dashboard");
       console.log("Login successful");
     } catch (error) {
       console.error("Login failed:", error);
