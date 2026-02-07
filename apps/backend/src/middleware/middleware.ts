@@ -11,6 +11,7 @@ declare global {
   namespace Express {
     interface Request {
       UserID?: string;
+      userId?: string;
       user?: { id: string };
     }
   }
@@ -35,6 +36,7 @@ export function authMiddleware(
     
     const payload = jwt.verify(validtoken, JWT_SECRET) as JwtPayload;
     req.UserID = payload.id;
+    req.userId = payload.id; // Also set userId for consistency
     next();
   } catch (e) {
     res.status(403).json({
@@ -43,3 +45,6 @@ export function authMiddleware(
     return;
   }
 }
+
+// Export an alias for backward compatibility
+export const authenticateJWT = authMiddleware;

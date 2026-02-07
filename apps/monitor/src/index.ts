@@ -1,6 +1,7 @@
 import { createClient } from "redis";
 import nodemailer from "nodemailer";
 import { Prismaclient } from "prisma/client";
+import axios from "axios";
 
 const streamBulkKey = "bulkUpdateQueue";
 const streamErrorKey = "errorProcessingQueue";
@@ -98,7 +99,7 @@ async function processBulkStream(
 }
 
 async function triggerAction(websitedata: any, url: string) {
-  console.log(`🔔 Triggering email notification for website: ${url}`);
+  console.log(`🔔 Triggering notifications for website: ${url}`);
 
   const userdata = await Prismaclient.user.findFirst({
     where: {
@@ -111,15 +112,34 @@ async function triggerAction(websitedata: any, url: string) {
     return;
   }
 
-  // Check if email notifications are enabled for this website
+  // Check if notifications are enabled for this website
   const website = await Prismaclient.website.findFirst({
     where: {
       id: websitedata.id,
     },
     include: {
       notificationPref: true,
+      owner: true,
     },
   });
+
+  // Trigger webhook if configured
+  if (website?.owner && website.owner.webhookUrl) {
+    await triggerWebhook(website.owner.webhookUrl, {
+      event: 'website.down',
+      website: {
+        id: websitedata.id,
+        url: url,
+        incident: websitedata.incident,
+        timestamp: new Date().toISOString(),
+      },
+      user: {
+        id: userdata.id,
+        email: userdata.email,
+        name: userdata.name,
+      }
+    });
+  }
 
   if (website?.notificationPref && !website.notificationPref.notifyEmail) {
     console.log("📧 Email notifications disabled for this website");
@@ -203,8 +223,23 @@ async function triggerAction(websitedata: any, url: string) {
   }
 }
 
+async function triggerWebhook(webhookUrl: string, payload: any) {
+  console.log(`🪝 Triggering webhook: ${webhookUrl}`);
+  try {
+    const response = await axios.post(webhookUrl, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout: 5000, // 5 second timeout
+    });
+    console.log(`✅ Webhook triggered successfully: ${response.status}`);
+  } catch (error: any) {
+    console.error(`❌ Failed to trigger webhook: ${error.message}`);
+  }
+}
+
 async function triggerRecoveryEmail(websiteId: string, url: string) {
-  console.log(`🟢 Triggering recovery email notification for website: ${url}`);
+  console.log(`🟢 Triggering recovery notifications for website: ${url}`);
 
   const website = await Prismaclient.website.findFirst({
     where: { id: websiteId },
@@ -217,6 +252,25 @@ async function triggerRecoveryEmail(websiteId: string, url: string) {
   if (!website?.owner?.email) {
     console.log("⚠️ No user email found, skipping notification");
     return;
+  }
+
+  // Trigger recovery webhook if configured
+  if (website?.owner && website.owner.webhookUrl) {
+    await triggerWebhook(website.owner.webhookUrl, {
+      event: 'website.up',
+      website: {
+        id: websiteId,
+        url: url,
+        incident: website.incident || 0,
+        timestamp: new Date().toISOString(),
+        uptime: website.uptime,
+      },
+      user: {
+        id: website.owner.id,
+        email: website.owner.email,
+        name: website.owner.name,
+      }
+    });
   }
 
   if (website?.notificationPref && !website.notificationPref.notifyEmail) {

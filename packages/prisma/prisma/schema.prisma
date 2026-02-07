@@ -19,6 +19,9 @@ model User {
   email   String   @unique
   name    String?
   password String
+  webhookUrl String?  // Optional webhook URL for notifications
+  resetToken String?  // Token for password reset
+  resetTokenExpiry DateTime? // Expiry time for reset token
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   websites  Website[] @relation("UserWebsites")

@@ -8,6 +8,7 @@ import Layout from "./components/layout/Layout";
 import HomePage from "./components/home/HomePage";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
+import { ResetPassword } from "./components/auth/ResetPassword";
 import { CreateMonitors } from "./components/createMonitors/CreateMonitors";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 import { Monitors } from "./components/dashboard/Monitors";
@@ -48,6 +49,8 @@ function App() {
         </Route>
         {/* Signup route - /signup */}
         <Route path="/signup" element={<Signup />} />
+        {/* Reset Password route - /reset-password */}
+        <Route path="/reset-password" element={<ResetPassword />} />
         {/* Redirect any unknown routes to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

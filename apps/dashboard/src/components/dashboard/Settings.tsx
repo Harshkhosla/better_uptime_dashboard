@@ -1,11 +1,24 @@
-import { useState } from "react";
-import { User, Bell, Shield, Key, Webhook, CreditCard, Globe } from "lucide-react";
+import { useState, useEffect } from "react";
+import { User, Bell, Shield, Key, Webhook, CreditCard, Globe, Loader2 } from "lucide-react";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3005/api/v1";
 
 export const Settings = () => {
   const [activeTab, setActiveTab] = useState("profile");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ type: "", text: "" });
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
   const [formData, setFormData] = useState({
-    name: "Harsh Khosla",
-    email: "harshkhosla9945@gmail.com",
+    name: "",
+    email: "",
     timezone: "Asia/Kolkata",
     notifyEmail: true,
     notifySMS: false,
@@ -13,6 +26,29 @@ export const Settings = () => {
     webhookUrl: "",
     apiKey: "btu_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   });
+
+  // Fetch user details on component mount
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
+
+  const fetchUserDetails = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${API_URL}/users/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const user = response.data.user;
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || "",
+        email: user.email || "",
+        webhookUrl: user.webhookUrl || "",
+      }));
+    } catch (error) {
+      console.error("Failed to fetch user details:", error);
+    }
+  };
 
   const tabs = [
     { id: "profile", label: "Profile", icon: User },
@@ -30,9 +66,78 @@ export const Settings = () => {
     }));
   };
 
-  const handleSave = () => {
-    // In real app, would call API to save settings
-    alert("Settings saved successfully!");
+  const handleSave = async () => {
+    setLoading(true);
+    setMessage({ type: "", text: "" });
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.put(
+        `${API_URL}/users/update`,
+        {
+          name: formData.name,
+          email: formData.email,
+          webhookUrl: formData.webhookUrl,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      setMessage({ type: "success", text: "Settings saved successfully!" });
+      setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+    } catch (error: any) {
+      setMessage({ type: "error", text: error.response?.data?.message || "Failed to save settings" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setMessage({ type: "error", text: "New passwords do not match" });
+      return;
+    }
+    
+    setLoading(true);
+    setMessage({ type: "", text: "" });
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `${API_URL}/users/change-password`,
+        {
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      setMessage({ type: "success", text: "Password changed successfully!" });
+      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      setShowPasswordModal(false);
+      setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+    } catch (error: any) {
+      setMessage({ type: "error", text: error.response?.data?.message || "Failed to change password" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setLoading(true);
+    setMessage({ type: "", text: "" });
+    try {
+      await axios.post(`${API_URL}/users/forgot-password`, {
+        email: forgotPasswordEmail,
+      });
+      setMessage({ type: "success", text: "Password reset link sent to your email!" });
+      setForgotPasswordEmail("");
+      setShowForgotPasswordModal(false);
+      setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+    } catch (error: any) {
+      setMessage({ type: "error", text: error.response?.data?.message || "Failed to send reset email" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -111,16 +216,37 @@ export const Settings = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Change Password
                       </label>
-                      <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                        Update Password
-                      </button>
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => setShowPasswordModal(true)}
+                          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                        >
+                          Update Password
+                        </button>
+                        <button 
+                          onClick={() => setShowForgotPasswordModal(true)}
+                          className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                        >
+                          Forgot Password?
+                        </button>
+                      </div>
                     </div>
+
+                    {message.text && (
+                      <div className={`p-3 rounded-lg ${
+                        message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {message.text}
+                      </div>
+                    )}
 
                     <div className="pt-4 border-t border-gray-200">
                       <button
                         onClick={handleSave}
-                        className="px-6 py-2 bg-black text-white rounded-lg hover:bg-yellow-600 transition-colors font-semibold"
+                        disabled={loading}
+                        className="px-6 py-2 bg-black text-white rounded-lg hover:bg-yellow-600 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                       >
+                        {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                         Save Changes
                       </button>
                     </div>
@@ -386,6 +512,137 @@ export const Settings = () => {
             </div>
           </div>
         </div>
+
+        {/* Password Change Modal */}
+        {showPasswordModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 w-full max-w-md">
+              <h2 className="text-2xl font-bold mb-4">Change Password</h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordData.currentPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordData.newPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+
+                {message.text && (
+                  <div className={`p-3 rounded-lg ${
+                    message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  }`}>
+                    {message.text}
+                  </div>
+                )}
+
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+                      setMessage({ type: "", text: "" });
+                    }}
+                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handlePasswordChange}
+                    disabled={loading}
+                    className="px-6 py-2 bg-black text-white rounded-lg hover:bg-yellow-600 transition-colors font-semibold disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                    Change Password
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Forgot Password Modal */}
+        {showForgotPasswordModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 w-full max-w-md">
+              <h2 className="text-2xl font-bold mb-4">Forgot Password</h2>
+              
+              <div className="space-y-4">
+                <p className="text-gray-600">Enter your email address and we'll send you a link to reset your password.</p>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={forgotPasswordEmail}
+                    onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+
+                {message.text && (
+                  <div className={`p-3 rounded-lg ${
+                    message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  }`}>
+                    {message.text}
+                  </div>
+                )}
+
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={() => {
+                      setShowForgotPasswordModal(false);
+                      setForgotPasswordEmail("");
+                      setMessage({ type: "", text: "" });
+                    }}
+                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleForgotPassword}
+                    disabled={loading || !forgotPasswordEmail}
+                    className="px-6 py-2 bg-black text-white rounded-lg hover:bg-yellow-600 transition-colors font-semibold disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                    Send Reset Link
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
