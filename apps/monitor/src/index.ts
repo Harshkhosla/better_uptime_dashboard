@@ -2,6 +2,7 @@ import { createClient } from "redis";
 import nodemailer from "nodemailer";
 import { Prismaclient } from "prisma/client";
 import axios from "axios";
+import { IncidentAnalysisService } from "./incidentAnalysis";
 
 const streamBulkKey = "bulkUpdateQueue";
 const streamErrorKey = "errorProcessingQueue";
@@ -66,6 +67,39 @@ async function processBulkStream(
           });
           console.log(`🟢 Website came UP, uptime started: ${message.message.url}`);
           
+          // Resolve any active incidents
+          const activeIncident = await Prismaclient.incident.findFirst({
+            where: {
+              websiteId: message.message.id,
+              status: "ACTIVE",
+            },
+            orderBy: { startedAt: 'desc' },
+          });
+
+          if (activeIncident) {
+            const duration = Math.floor((Date.now() - activeIncident.startedAt.getTime()) / 1000);
+            await Prismaclient.incident.update({
+              where: { id: activeIncident.id },
+              data: {
+                resolvedAt: new Date(),
+                duration,
+                status: "RESOLVED",
+              },
+            });
+
+            // Add timeline event for resolution
+            await Prismaclient.incidentTimeline.create({
+              data: {
+                incidentId: activeIncident.id,
+                eventType: "RESOLVED",
+                description: `Website ${website.url} is back online`,
+                metadata: { duration, region: message.message.origin },
+              },
+            });
+
+            console.log(`✅ Resolved incident #${activeIncident.incidentNumber} after ${duration}s`);
+          }
+          
           // Send recovery email notification
           await triggerRecoveryEmail(message.message.id, message.message.url || website.url);
         }
@@ -98,7 +132,7 @@ async function processBulkStream(
   return lastBulkId;
 }
 
-async function triggerAction(websitedata: any, url: string) {
+async function triggerAction(websitedata: any, url: string, incident?: any, analysis?: any) {
   console.log(`🔔 Triggering notifications for website: ${url}`);
 
   const userdata = await Prismaclient.user.findFirst({
@@ -133,6 +167,18 @@ async function triggerAction(websitedata: any, url: string) {
         incident: websitedata.incident,
         timestamp: new Date().toISOString(),
       },
+      incidentDetails: incident ? {
+        id: incident.id,
+        number: incident.incidentNumber,
+        severity: incident.severity,
+        errorType: incident.errorType,
+      } : undefined,
+      analysis: analysis ? {
+        rootCause: analysis.rootCause,
+        impactSummary: analysis.impactSummary,
+        recommendations: analysis.recommendations,
+        preventionTips: analysis.preventionTips,
+      } : undefined,
       user: {
         id: userdata.id,
         email: userdata.email,
@@ -409,8 +455,60 @@ async function processErrorStream(
         });
         console.log(`🔴 Website went DOWN, uptime reset: ${websiteadata.url}`);
         
+        // Create a new incident record
+        const incidentNumber = (websiteadata.incident || 0);
+        const incident = await Prismaclient.incident.create({
+          data: {
+            websiteId: message.message.id,
+            incidentNumber,
+            startedAt: new Date(),
+            severity: "MAJOR",
+            status: "ACTIVE",
+            errorType: "timeout", // You can determine this from error message
+            errorMessage: message.message.error || "Website is not responding",
+            affectedRegions: [message.message.origin],
+          },
+        });
+        console.log(`🚨 Created incident #${incidentNumber} for ${websiteadata.url}`);
+
+        // Add timeline event for incident start
+        await Prismaclient.incidentTimeline.create({
+          data: {
+            incidentId: incident.id,
+            eventType: "STARTED",
+            description: `Website ${websiteadata.url} went down`,
+            metadata: { region: message.message.origin },
+          },
+        });
+
+        // Trigger AI analysis
+        const recentStatuses = await Prismaclient.websiteStatus.findMany({
+          where: { websiteId: message.message.id },
+          orderBy: { timestamp: 'desc' },
+          take: 50,
+        });
+
+        const historicalIncidents = await Prismaclient.incident.findMany({
+          where: { 
+            websiteId: message.message.id,
+            id: { not: incident.id } // Exclude current incident
+          },
+        });
+
+        console.log(`🤖 Triggering AI analysis for incident #${incidentNumber}`);
+        const analysis = await IncidentAnalysisService.analyzeIncident(incident.id, {
+          url: websiteadata.url,
+          errorType: "timeout",
+          errorMessage: message.message.error,
+          responseTime: duration,
+          affectedRegions: [message.message.origin],
+          recentStatuses,
+          historicalIncidents,
+        });
+        console.log(`✅ AI analysis completed for incident #${incidentNumber}`);
+        
         console.log(`📧 Sending email for: ${websiteadata.url}`);
-        await triggerAction(websiteadata, websiteadata.url);
+        await triggerAction(websiteadata, websiteadata.url, incident, analysis);
         const created = await Prismaclient.websiteStatus.create({
           data: {
             regionId: region.id,

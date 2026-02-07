@@ -2,6 +2,7 @@ import { useGetwebsitebyIdQuery, useDeleteWebsiteMutation } from "../../redux/ap
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "../../redux/hooks";
 import ResponseTimeChart from "./chart";
+import { IncidentPanel } from "./IncidentPanel";
 import { useState } from "react";
 
 function getUptimeString(uptime: string | Date | null, isUp: boolean): string {
@@ -35,6 +36,7 @@ export const MonitorDetail = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [activeTab, setActiveTab] = useState<"overview" | "incidents">("overview");
 
   const {
     data: websiteData,
@@ -89,13 +91,18 @@ export const MonitorDetail = () => {
           <p
             className={`${isUp ? "text-green-600" : "text-red-600"} text-sm font-medium`}
           >
-            {isUp ? "Up" : "Down"} · Checked every {websiteData?.checkInterval || 5}{" "}
-            {websiteData?.checkInterval === 1 ? "minute" : "minutes"}
+            {isUp ? "Up" : "Down"} · Checked every {(websiteData as any)?.checkInterval || 5}{" "}
+            {(websiteData as any)?.checkInterval === 1 ? "minute" : "minutes"}
           </p>
         </div>
         <div className="ml-auto flex items-center space-x-4 text-sm mt-14 text-gray-600">
           <button className="hover:underline hover:text-gray-900">Send test alert</button>
-          <button className="hover:underline hover:text-gray-900">Incidents</button>
+          <button 
+            onClick={() => setActiveTab("incidents")}
+            className="hover:underline hover:text-gray-900"
+          >
+            Incidents
+          </button>
           <button className="hover:underline hover:text-gray-900">Pause</button>
           <button className="hover:underline hover:text-gray-900">Configure</button>
           <button 
@@ -136,22 +143,64 @@ export const MonitorDetail = () => {
         </div>
       )}
 
-      {/* Status Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <p className="text-sm text-gray-600">{isUp ? "Currently up for" : "Status"}</p>
-          <p className={`text-xl font-bold ${isUp ? "text-green-600" : "text-red-600"}`}>{uptime}</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <p className="text-sm text-gray-600">Last checked at</p>
-          <p className="text-xl font-bold text-gray-900">5 minutes ago</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <p className="text-sm text-gray-600">Incidents</p>
-          <p className="text-xl font-bold text-gray-900">{websiteData?.incident}</p>
-        </div>
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="-mb-px flex space-x-8">
+          <button
+            onClick={() => setActiveTab("overview")}
+            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === "overview"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={() => setActiveTab("incidents")}
+            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 ${
+              activeTab === "incidents"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            <span>Incidents</span>
+            {websiteData?.incident && websiteData.incident > 0 && (
+              <span className={`px-2 py-0.5 text-xs rounded-full ${
+                activeTab === "incidents" 
+                  ? "bg-blue-100 text-blue-600" 
+                  : "bg-gray-100 text-gray-600"
+              }`}>
+                {websiteData.incident}
+              </span>
+            )}
+          </button>
+        </nav>
       </div>
-      <ResponseTimeChart websitedata={websiteData?.websiteStatus} />
+
+      {/* Tab Content */}
+      {activeTab === "overview" ? (
+        <>
+          {/* Status Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <p className="text-sm text-gray-600">{isUp ? "Currently up for" : "Status"}</p>
+              <p className={`text-xl font-bold ${isUp ? "text-green-600" : "text-red-600"}`}>{uptime}</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <p className="text-sm text-gray-600">Last checked at</p>
+              <p className="text-xl font-bold text-gray-900">5 minutes ago</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <p className="text-sm text-gray-600">Total Incidents</p>
+              <p className="text-xl font-bold text-gray-900">{websiteData?.incident || 0}</p>
+            </div>
+          </div>
+          <ResponseTimeChart websitedata={websiteData?.websiteStatus} />
+        </>
+      ) : (
+        <IncidentPanel websiteId={id} />
+      )}
       </div>
     </div>
   );

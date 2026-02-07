@@ -144,6 +144,7 @@ model Website{
   notificationPrefId String?
   owner       User      @relation("UserWebsites", fields: [ownerId], references: [id])
   ownerId     String
+  incidents   Incident[] @relation("WebsiteIncidents")
 }
 model WebsiteStatus{
    id  String @id @default(uuid()) @map("_id")
@@ -166,4 +167,91 @@ enum statusCheck{
   Up
   DOWN
   UNKNONE
+}
+
+// New models for incident tracking and analysis
+model Incident {
+  id              String   @id @default(uuid()) @map("_id")
+  websiteId       String
+  website         Website  @relation("WebsiteIncidents", fields: [websiteId], references: [id])
+  incidentNumber  Int      // Sequential incident number for the website
+  startedAt       DateTime @default(now())
+  resolvedAt      DateTime?
+  duration        Int?     // Duration in seconds
+  severity        IncidentSeverity @default(MINOR)
+  status          IncidentStatus @default(ACTIVE)
+  errorType       String?  // Type of error (timeout, DNS, SSL, 5xx, etc.)
+  errorMessage    String?  // Raw error message
+  affectedRegions String[] // List of affected regions
+  analysis        IncidentAnalysis? @relation("IncidentAnalysis")
+  timeline        IncidentTimeline[] @relation("IncidentTimeline")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([websiteId, startedAt])
+  @@unique([websiteId, incidentNumber])
+}
+
+model IncidentAnalysis {
+  id                String   @id @default(uuid()) @map("_id")
+  incidentId        String   @unique
+  incident          Incident @relation("IncidentAnalysis", fields: [incidentId], references: [id], onDelete: Cascade)
+  
+  // AI-generated analysis
+  rootCause         String?  // AI-identified root cause
+  impactSummary     String?  // Summary of impact
+  affectedUsers     Int?     // Estimated affected users
+  recommendations   Json?    // Array of recommended actions
+  preventionTips    Json?    // Tips to prevent similar incidents
+  similarIncidents  Json?    // References to similar past incidents
+  pattern           String?  // Identified pattern (gradual degradation, sudden failure, etc.)
+  
+  // Metrics
+  avgResponseTime   Int?     // Average response time during incident
+  errorRate         Float?   // Error rate percentage
+  
+  // AI metadata
+  aiModel           String?  // Which AI model was used
+  confidence        Float?   // Confidence score of the analysis
+  
+  analyzedAt        DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model IncidentTimeline {
+  id              String   @id @default(uuid()) @map("_id")
+  incidentId      String
+  incident        Incident @relation("IncidentTimeline", fields: [incidentId], references: [id], onDelete: Cascade)
+  
+  timestamp       DateTime @default(now())
+  eventType       TimelineEventType
+  description     String
+  metadata        Json?    // Additional data about the event
+  
+  @@index([incidentId, timestamp])
+}
+
+enum IncidentSeverity {
+  CRITICAL  // Complete outage
+  MAJOR     // Significant degradation
+  MINOR     // Small issues
+  WARNING   // Potential issues detected
+}
+
+enum IncidentStatus {
+  ACTIVE      // Currently happening
+  RESOLVED    // Fixed
+  MONITORING  // Fixed but monitoring
+  CLOSED      // Fully closed
+}
+
+enum TimelineEventType {
+  STARTED           // Incident began
+  DEGRADED          // Performance degraded
+  DOWN              // Complete outage
+  RECOVERING        // Starting to recover
+  RESOLVED          // Back to normal
+  ANALYSIS_ADDED    // AI analysis completed
+  USER_NOTE         // Manual note added
+  NOTIFICATION_SENT // Alert sent
 }

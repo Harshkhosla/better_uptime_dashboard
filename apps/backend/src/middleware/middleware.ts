@@ -37,6 +37,7 @@ export function authMiddleware(
     const payload = jwt.verify(validtoken, JWT_SECRET) as JwtPayload;
     req.UserID = payload.id;
     req.userId = payload.id; // Also set userId for consistency
+    req.user = { id: payload.id }; // Set user object for new routes
     next();
   } catch (e) {
     res.status(403).json({
